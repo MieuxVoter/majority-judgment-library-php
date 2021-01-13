@@ -1,0 +1,23 @@
+{
+  "name": "mieuxvoter/mj-library-php",
+  "description": "A PHP library to deliberate using Majority Judgment.",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "MieuxVoter",
+      "email": "bonjour@mieuxvoter.fr"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "MieuxVoter" : "src/"
+    }
+  }
+}
