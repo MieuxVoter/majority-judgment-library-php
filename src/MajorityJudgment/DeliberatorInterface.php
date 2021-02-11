@@ -25,11 +25,13 @@ interface DeliberatorInterface
      * Class name of the Options class to use with this Deliberator.
      * Usually specifies what the default Grade is, that kind of thing.
      *
-     * The returned class MUST validate `class_exists()`.
-     * Probably best to use the `MayAwesomeOptions::class` syntax in here.
      * This enables each Deliberator to have their own custom set of options.
      * If your deliberator has no options, use:
      *     return \MieuxVoter\MajorityJudgment\Model\Options\NoOptions::class;
+     *
+     * The returned class MUST validate `class_exists()`.
+     * Probably best to use the `MayAwesomeOptions::class` syntax in here,
+     * instead of a raw string.
      *
      * @return string
      */
@@ -43,5 +45,5 @@ interface DeliberatorInterface
      * @param mixed $options An instance of the class provided by `getOptionsClass()`.
      * @return PollResultInterface
      */
-    public function deliberate(PollTallyInterface $pollTally, $options) : PollResultInterface;
+    public function deliberate(PollTallyInterface $pollTally, $options=null) : PollResultInterface;
 }

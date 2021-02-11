@@ -60,8 +60,11 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @param mixed $options An instance of the class provided by `getOptionsClass()`.
      * @return PollResultInterface
      */
-    public function deliberate(PollTallyInterface $pollTally, $options): PollResultInterface
+    public function deliberate(PollTallyInterface $pollTally, $options=null): PollResultInterface
     {
+        if (null == $options) {
+            $options = new MajorityJudgmentOptions();
+        }
         $proposalResults = [];
 
         // I. Compute the score of each proposal, skip the rank for now
@@ -94,10 +97,9 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
             } else {
                 if (
                     $proposalResults[$i]->getScore()
-                    ==
+                    ==  // Wow, we have a *perfect* ex-æquo → same rank
                     $proposalResults[$i-1]->getScore()
                 ) {
-                    // Wow, we have a *perfect* ex-æquo!
                     $proposalResults[$i]->setRank(
                         $proposalResults[$i-1]->getRank()
                     );
