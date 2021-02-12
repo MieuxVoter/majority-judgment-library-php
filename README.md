@@ -9,6 +9,11 @@
 
 ## Usage example
 
+Require it in your own project, using composer:
+
+    composer require mieuxvoter/mj-library-php
+
+
 ```php
 
 $tally = new Tally\ArrayPollTally([
@@ -36,3 +41,8 @@ Any object implementing the PollTallyInterface may be used as input.
 ### Testing
 
 See the tests in `test/`.
+
+    composer install --dev
+    vendor/phpunit/phpunit/phpunit -v test
+
+
