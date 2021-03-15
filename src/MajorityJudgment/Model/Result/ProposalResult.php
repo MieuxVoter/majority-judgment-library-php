@@ -21,6 +21,13 @@ class ProposalResult
      */
     protected $proposal;
 
+    /**
+     * The amount of judgments received by this proposal on each grade,
+     * from 'lowest|worst' grade to 'highest|best' grade.
+     *
+     * @var array $tally Array of int
+     */
+    protected $tally;
 
     /**
      * Rank of the Proposal, in the Result.
@@ -70,19 +77,19 @@ class ProposalResult
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getScore(): string
+    public function getTally(): array
     {
-        return $this->score;
+        return $this->tally;
     }
 
     /**
-     * @param string $score
+     * @param array $tally
      */
-    public function setScore(string $score): void
+    public function setTally(array $tally): void
     {
-        $this->score = $score;
+        $this->tally = $tally;
     }
 
     /**
@@ -99,6 +106,22 @@ class ProposalResult
     public function setRank(int $rank): void
     {
         $this->rank = $rank;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScore(): string
+    {
+        return $this->score;
+    }
+
+    /**
+     * @param string $score
+     */
+    public function setScore(string $score): void
+    {
+        $this->score = $score;
     }
 
     /**

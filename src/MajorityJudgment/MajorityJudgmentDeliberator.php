@@ -184,6 +184,9 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
             $tallies[$defaultGradeIndex] += $participantsAmount - $actualParticipantsAmount;
         }
 
+        // III.b Store the "default grade" adjusted tally
+        $unproposalResult->setTally(array_values($tallies));
+
         // IV. Compute the median
         $medianGradeIndex = self::getMedianGradeIndex($tallies);
         $median = $grades[$medianGradeIndex];

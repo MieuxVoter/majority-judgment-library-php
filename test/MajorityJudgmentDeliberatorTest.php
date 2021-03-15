@@ -48,6 +48,29 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 ],
             ],
 
+            [
+                # Amount of judgments
+                3,
+                # Tallies
+                [
+                    'proposal_a' => [0, 1, 0, 1, 0, 1],
+                    'proposal_b' => [0, 0, 0, 1, 0, 1],
+                ],
+                # Expectation
+                [
+                    [
+                        'proposal' => 'proposal_a',
+                        'rank' => 1,
+                        'tally' => [0, 1, 0, 1, 0, 1],
+                    ],
+                    [
+                        'proposal' => 'proposal_b',
+                        'rank' => 2,
+                        'tally' => [1, 0, 0, 1, 0, 1],
+                    ],
+                ],
+            ],
+
             # Dataset: https://github.com/MieuxVoter/mvapi/blob/821a53b2c4b6009c1d8647feb96c754b99b9268b/fixtures/election1.yaml
             [
                 # Amount of judgments
@@ -176,16 +199,27 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         $i = 0;
         foreach ($expectedResults as $expectedResult) {
             $proposalResult = $proposalResults[$i];
-            $this->assertEquals(
-                $expectedResult['proposal'],
-                $proposalResult->getProposal(),
-                "Proposals are sorted adequately"
-            );
-            $this->assertEquals(
-                $expectedResult['rank'],
-                $proposalResult->getRank(),
-                "Proposals are ranked adequately"
-            );
+            if (isset($expectedResult['proposal'])) {
+                $this->assertEquals(
+                    $expectedResult['proposal'],
+                    $proposalResult->getProposal(),
+                    "Proposals are sorted adequately"
+                );
+            }
+            if (isset($expectedResult['rank'])) {
+                $this->assertEquals(
+                    $expectedResult['rank'],
+                    $proposalResult->getRank(),
+                    "Proposals are ranked adequately"
+                );
+            }
+            if (isset($expectedResult['tally'])) {
+                $this->assertEquals(
+                    $expectedResult['tally'],
+                    $proposalResult->getTally(),
+                    "Proposals' tallies are filled adequately"
+                );
+            }
             $i++;
         }
 
