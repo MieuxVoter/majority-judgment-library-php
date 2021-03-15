@@ -5,7 +5,7 @@ namespace MieuxVoter\MajorityJudgment\Test;
 
 
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
-use MieuxVoter\MajorityJudgment\Model\Options\MajorityJudgmentOptions;
+use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 use PHPUnit\Framework\TestCase;
 
@@ -159,11 +159,11 @@ class MajorityJudgmentDeliberatorTest extends TestCase
     public function testDeliberate($amountOfJudgments, $tallyPerProposal, $expectedResults) {
 
         $deliberator = new MajorityJudgmentDeliberator();
-        $options = new MajorityJudgmentOptions();
+        $settings = new MajorityJudgmentSettings();
         $pollTally = new ArrayPollTally(
             $amountOfJudgments, $tallyPerProposal
         );
-        $result = $deliberator->deliberate($pollTally, $options);
+        $result = $deliberator->deliberate($pollTally, $settings);
 
         $proposalResults = $result->getProposalResults();
 

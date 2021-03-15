@@ -4,10 +4,10 @@
 namespace MieuxVoter\MajorityJudgment;
 
 
-use MieuxVoter\MajorityJudgment\Model\Options\MajorityJudgmentOptions;
 use MieuxVoter\MajorityJudgment\Model\Result\GenericPollResult;
 use MieuxVoter\MajorityJudgment\Model\Result\PollResultInterface;
 use MieuxVoter\MajorityJudgment\Model\Result\ProposalResult;
+use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\PollTallyInterface;
 use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 
@@ -47,9 +47,9 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      *
      * @return string
      */
-    public function getOptionsClass(): string
+    public function getSettingsClass(): string
     {
-        return MajorityJudgmentOptions::class;
+        return MajorityJudgmentSettings::class;
     }
 
     /**
@@ -57,13 +57,13 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * This is the heart of the Ranking, where the business logic resides.
      *
      * @param PollTallyInterface $pollTally
-     * @param mixed $options An instance of the class provided by `getOptionsClass()`.
+     * @param mixed $settings An instance of the class provided by `getOptionsClass()`.
      * @return PollResultInterface
      */
-    public function deliberate(PollTallyInterface $pollTally, $options=null): PollResultInterface
+    public function deliberate(PollTallyInterface $pollTally, $settings=null): PollResultInterface
     {
-        if (null == $options) {
-            $options = new MajorityJudgmentOptions();
+        if (null == $settings) {
+            $settings = new MajorityJudgmentSettings();
         }
         $proposalResults = [];
 
@@ -72,7 +72,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
             $scoredProposal = self::computeUnproposalResult(
                 $proposalsTally,
                 $pollTally->getParticipantsAmount(),
-                $options
+                $settings
             );
             $proposalResults[] = $scoredProposal;
         }
@@ -125,13 +125,13 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      *
      * @param ProposalTallyInterface $proposalTally
      * @param int $participantsAmount
-     * @param MajorityJudgmentOptions $options
+     * @param MajorityJudgmentSettings $settings
      * @return ProposalResult
      */
     static function computeUnproposalResult( // computeProposalResultWithScoreOnly?
         ProposalTallyInterface $proposalTally,
         int $participantsAmount,
-        MajorityJudgmentOptions $options
+        MajorityJudgmentSettings $settings
     ) : ProposalResult
     {
         $unproposalResult = new ProposalResult();
@@ -166,7 +166,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         $amountOfGrades = count($grades);
 
         // II. Prepare a default Grade
-        $defaultGradeIndex = $options->getDefaultGradeIndex();
+        $defaultGradeIndex = $settings->getDefaultGradeIndex();
         assert(
             0 <= $defaultGradeIndex
             &&

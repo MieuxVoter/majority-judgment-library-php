@@ -1,21 +1,21 @@
 <?php
 
 
-namespace MieuxVoter\MajorityJudgment\Model\Options;
+namespace MieuxVoter\MajorityJudgment\Model\Settings;
 
 
 /**
- * Options for Majority Judgment.
+ * Settings for Majority Judgment.
  *
  * Ideas:
  * - [x] Default Grade
  * - [ ] Low|High Median
  * - [ ] Automated liquidity (à la proxyfor.me) → no can do with tallies only
  *
- * Class MajorityJudgmentOptions
- * @package MieuxVoter\MajorityJudgment\Resolver\Options
+ * Class MajorityJudgmentSettings
+ * @package MieuxVoter\MajorityJudgment\Model\Settings
  */
-class MajorityJudgmentOptions
+class MajorityJudgmentSettings
 {
 
     protected $default_grade_index = 0;

@@ -15,15 +15,20 @@ Require it in your own project, using composer:
 
 
 ```php
+use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
+use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
+use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 
-$tally = new Tally\ArrayPollTally([
+$tally = new ArrayPollTally([
     'Proposal A' => [1, 1, 4, 3, 7, 4, 1], // amount of judgments for each grade
     'Proposal B' => [0, 2, 4, 6, 4, 2, 3], // (worst grade to best grade)
 ]);
-$options = new Options\MajorityJudgmentOptions();
+$settings = new MajorityJudgmentSettings();
 $deliberator = MajorityJudgmentDeliberator();
-$result = $deliberator->deliberate($tally, $options);
+
+$result = $deliberator->deliberate($tally, $settings);
 // $result is a PollResultInterface
+
 foreach($result->getProposalResults() as $proposalResult) {
     // … Do something
     print($proposalResult->getProposal());
