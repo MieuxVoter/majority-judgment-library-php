@@ -1,9 +1,13 @@
 # Majority Judgment PHP Library
 
+Deliberate ⚖ majority judgment polls.
+
+
 ## Features
 
 - Majority Judgment deliberation from merit profiles
-- Score based
+- Score based, efficiency should scale well
+- Interface-oriented, test-driven code
 - Extensible to get other judgments (usual, central, etc.)
 
 
@@ -13,6 +17,7 @@ Require it in your own project, using composer:
 
     composer require mieuxvoter/mj-library-php
 
+Use it:
 
 ```php
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
@@ -40,7 +45,7 @@ foreach($result->getProposalResults() as $proposalResult) {
 
 ## Interface-oriented
 
-Any object implementing the PollTallyInterface may be used as input.
+Any object implementing `PollTallyInterface` may be used as input.
 
 
 ### Testing
