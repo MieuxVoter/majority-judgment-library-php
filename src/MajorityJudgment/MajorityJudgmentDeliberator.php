@@ -69,7 +69,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
 
         // I. Compute the score of each proposal, skip the rank for now
         foreach ($pollTally->getProposalsTallies() as $proposalsTally) {
-            $scoredProposal = self::computeUnproposalResult(
+            $scoredProposal = self::computeProposalResult(
                 $proposalsTally,
                 $pollTally->getParticipantsAmount(),
                 $settings
@@ -128,14 +128,14 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @param MajorityJudgmentSettings $settings
      * @return ProposalResult
      */
-    static function computeUnproposalResult( // computeProposalResultWithScoreOnly?
+    static function computeProposalResult( // computeProposalResultWithScoreOnly?
         ProposalTallyInterface $proposalTally,
         int $participantsAmount,
         MajorityJudgmentSettings $settings
     ) : ProposalResult
     {
-        $unproposalResult = new ProposalResult();
-        $unproposalResult->setProposal($proposalTally->getProposal());
+        $proposalResult = new ProposalResult();
+        $proposalResult->setProposal($proposalTally->getProposal());
 
         // I. Collect data and check its sanity
         $gradesTallies = $proposalTally->getGradesTallies();
@@ -185,12 +185,12 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         }
 
         // III.b Store the "default grade" adjusted tally
-        $unproposalResult->setTally(array_values($tallies));
+        $proposalResult->setTally(array_values($tallies));
 
         // IV. Compute the median
         $medianGradeIndex = self::getMedianGradeIndex($tallies);
         $median = $grades[$medianGradeIndex];
-        $unproposalResult->setMedian($median);
+        $proposalResult->setMedian($median);
 
         // V. Compute a lexicographical score (higher is "better")
         $score = "";
@@ -228,9 +228,9 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         }
 
         //dump("Score", $proposalTally->getProposal(), $score);
-        $unproposalResult->setScore($score);
+        $proposalResult->setScore($score);
 
-        return $unproposalResult;
+        return $proposalResult;
     }
 
 
