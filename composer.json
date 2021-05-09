@@ -1,6 +1,6 @@
 {
-  "name": "mieuxvoter/mj-library-php",
-  "description": "A PHP library to deliberate using Majority Judgment.",
+  "name": "mieuxvoter/majority-judgment",
+  "description": "Deliberate your polls using Majority Judgment with a fast, robust, interface-oriented and scalable algorithm.",
   "license": "MIT",
   "type": "library",
   "authors": [
