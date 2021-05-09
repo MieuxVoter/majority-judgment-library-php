@@ -16,11 +16,7 @@ Deliberate majority judgment polls ⚖.
 
 Require it in your own project, using composer:
 
-    composer require mieuxvoter/mj-library-php
-
-or (repo changed name)
-
-    composer require mieuxvoter/majority-judgment-library-php
+    composer require mieuxvoter/majority-judgment
 
 Use it:
 
