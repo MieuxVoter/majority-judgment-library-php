@@ -18,6 +18,10 @@ Require it in your own project, using composer:
 
     composer require mieuxvoter/mj-library-php
 
+or (repo changed name)
+
+    composer require mieuxvoter/majority-judgment-library-php
+
 Use it:
 
 ```php
