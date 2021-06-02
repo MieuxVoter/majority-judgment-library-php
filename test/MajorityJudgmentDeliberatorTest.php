@@ -71,6 +71,31 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 ],
             ],
 
+            [
+                # Amount of judgments
+                1,
+                # Tallies
+                [
+                    'proposal_a' => [0, 0, 0, 1, 0, 0],
+                    'proposal_b' => [0, 0, 0, 0, 0, 1],
+                ],
+                # Expectation
+                [
+                    [
+                        'proposal' => 'proposal_b',
+                        'rank' => 1,
+                        'tally' => [0, 0, 0, 0, 0, 1],
+                        'median' => 5,
+                    ],
+                    [
+                        'proposal' => 'proposal_a',
+                        'rank' => 2,
+                        'tally' => [0, 0, 0, 1, 0, 0],
+                        'median' => 3,
+                    ],
+                ],
+            ],
+
             # Dataset: https://github.com/MieuxVoter/mvapi/blob/821a53b2c4b6009c1d8647feb96c754b99b9268b/fixtures/election1.yaml
             [
                 # Amount of judgments
@@ -217,6 +242,13 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 $this->assertEquals(
                     $expectedResult['tally'],
                     $proposalResult->getTally(),
+                    "Proposals' tallies are filled adequately"
+                );
+            }
+            if (isset($expectedResult['median'])) {
+                $this->assertEquals(
+                    $expectedResult['median'],
+                    $proposalResult->getMedian(),
                     "Proposals' tallies are filled adequately"
                 );
             }
