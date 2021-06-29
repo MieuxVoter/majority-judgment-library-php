@@ -7,6 +7,7 @@ namespace MieuxVoter\MajorityJudgment\Test;
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
 use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
 use PHPUnit\Framework\TestCase;
 
 
@@ -18,8 +19,10 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         return [
 
             [
-                # Amount of judgments
+                # Amount of judges
                 21,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [1, 1, 4, 3, 7, 4, 1],
@@ -49,8 +52,10 @@ class MajorityJudgmentDeliberatorTest extends TestCase
             ],
 
             [
-                # Amount of judgments
+                # Amount of judges
                 3,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [0, 1, 0, 1, 0, 1],
@@ -72,8 +77,10 @@ class MajorityJudgmentDeliberatorTest extends TestCase
             ],
 
             [
-                # Amount of judgments
+                # Amount of judges
                 1,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [0, 0, 0, 1, 0, 0],
@@ -96,10 +103,13 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 ],
             ],
 
+
             # Dataset: https://github.com/MieuxVoter/mvapi/blob/821a53b2c4b6009c1d8647feb96c754b99b9268b/fixtures/election1.yaml
             [
-                # Amount of judgments
+                # Amount of judges
                 18,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     [0, 2, 0, 7, 5, 4],
@@ -204,13 +214,16 @@ class MajorityJudgmentDeliberatorTest extends TestCase
      * @param $tallyPerProposal
      * @param $expectedResults
      */
-    public function testDeliberate($amountOfJudgments, $tallyPerProposal, $expectedResults) {
+    public function testDeliberate($amountOfJudgments, $defaultJudgment, $tallyPerProposal, $expectedResults) {
 
         $deliberator = new MajorityJudgmentDeliberator();
         $settings = new MajorityJudgmentSettings();
         $pollTally = new ArrayPollTally(
             $amountOfJudgments, $tallyPerProposal
         );
+        if (is_int($defaultJudgment)) {
+            $pollTally = Balancer::applyStaticDefault($pollTally, $defaultJudgment);
+        }
         $result = $deliberator->deliberate($pollTally, $settings);
 
         $proposalResults = $result->getProposalResults();
@@ -256,6 +269,7 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         }
 
     }
+
 
 
     public function testGetMedianGradeIndex()
