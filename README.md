@@ -44,6 +44,24 @@ foreach($result->getProposalResults() as $proposalResult) {
 ```
 
 
+### Unbalanced Tallies
+
+If your tally is unbalanced, because some proposals received more judgments than others,
+you will need to balance the tally using one of the provided balancing methods (or your own):
+
+```php
+
+use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
+
+$tally = Balancer::applyStaticDefault($tally);
+// or
+$tally = Balancer::applyMedianDefault($tally);
+// or
+$tally = Balancer::applyNormalization($tally);
+
+```
+
+
 ## Interface-oriented
 
 Any object implementing `PollTallyInterface` may be used as input.

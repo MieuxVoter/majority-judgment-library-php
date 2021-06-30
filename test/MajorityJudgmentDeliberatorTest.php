@@ -7,6 +7,7 @@ namespace MieuxVoter\MajorityJudgment\Test;
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
 use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
 use PHPUnit\Framework\TestCase;
 
 
@@ -18,8 +19,11 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         return [
 
             [
-                # Amount of judgments
+                "Basic test 1",
+                # Amount of judges
                 21,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [1, 1, 4, 3, 7, 4, 1],
@@ -49,8 +53,11 @@ class MajorityJudgmentDeliberatorTest extends TestCase
             ],
 
             [
-                # Amount of judgments
+                "Default static judgment to worst grade",
+                # Amount of judges
                 3,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [0, 1, 0, 1, 0, 1],
@@ -72,8 +79,11 @@ class MajorityJudgmentDeliberatorTest extends TestCase
             ],
 
             [
-                # Amount of judgments
+                "Single judge",
+                # Amount of judges
                 1,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     'proposal_a' => [0, 0, 0, 1, 0, 0],
@@ -96,10 +106,42 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 ],
             ],
 
+            [
+                "Median Judgment",
+                # Amount of judges
+                7,
+                # Default Judgment
+                "median",
+                # Tallies
+                [
+                    'proposal_a' => [0, 2, 1, 0, 0, 2],
+                    'proposal_b' => [1, 1, 1, 1, 1, 0],
+                ],
+                # Expectation
+                [
+                    [
+                        'proposal' => 'proposal_a',
+                        'rank' => 1,
+                        'tally' => [0, 2, 3, 0, 0, 2],
+                        'median' => 2,
+                    ],
+                    [
+                        'proposal' => 'proposal_b',
+                        'rank' => 2,
+                        'tally' => [1, 1, 3, 1, 1, 0],
+                        'median' => 2,
+                    ],
+                ],
+            ],
+
+
             # Dataset: https://github.com/MieuxVoter/mvapi/blob/821a53b2c4b6009c1d8647feb96c754b99b9268b/fixtures/election1.yaml
             [
-                # Amount of judgments
+                "Paris' test dataset",
+                # Amount of judges
                 18,
+                # Default Judgment
+                0,
                 # Tallies
                 [
                     [0, 2, 0, 7, 5, 4],
@@ -204,13 +246,19 @@ class MajorityJudgmentDeliberatorTest extends TestCase
      * @param $tallyPerProposal
      * @param $expectedResults
      */
-    public function testDeliberate($amountOfJudgments, $tallyPerProposal, $expectedResults) {
+    public function testDeliberate($title, $amountOfJudgments, $defaultJudgment, $tallyPerProposal, $expectedResults) {
 
         $deliberator = new MajorityJudgmentDeliberator();
         $settings = new MajorityJudgmentSettings();
         $pollTally = new ArrayPollTally(
             $amountOfJudgments, $tallyPerProposal
         );
+        if (is_int($defaultJudgment)) {
+            $pollTally = Balancer::applyStaticDefault($pollTally, $defaultJudgment);
+        }
+        if ("median" === $defaultJudgment) {
+            $pollTally = Balancer::applyMedianDefault($pollTally);
+        }
         $result = $deliberator->deliberate($pollTally, $settings);
 
         $proposalResults = $result->getProposalResults();
@@ -218,7 +266,7 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         $this->assertEquals(
             count($proposalResults),
             count($expectedResults),
-            "The amount of proposals is the same."
+            sprintf("[%s] The amount of proposals is the same.", $title)
         );
 
         $i = 0;
@@ -228,34 +276,35 @@ class MajorityJudgmentDeliberatorTest extends TestCase
                 $this->assertEquals(
                     $expectedResult['proposal'],
                     $proposalResult->getProposal(),
-                    "Proposals are sorted adequately"
+                    sprintf("[%s] Proposals are sorted adequately", $title)
                 );
             }
             if (isset($expectedResult['rank'])) {
                 $this->assertEquals(
                     $expectedResult['rank'],
                     $proposalResult->getRank(),
-                    "Proposals are ranked adequately"
+                    sprintf("[%s] Proposals are ranked adequately", $title)
                 );
             }
             if (isset($expectedResult['tally'])) {
                 $this->assertEquals(
                     $expectedResult['tally'],
                     $proposalResult->getTally(),
-                    "Proposals' tallies are filled adequately"
+                    sprintf("[%s] Proposals' tallies are filled adequately", $title)
                 );
             }
             if (isset($expectedResult['median'])) {
                 $this->assertEquals(
                     $expectedResult['median'],
                     $proposalResult->getMedian(),
-                    "Proposals' tallies are filled adequately"
+                    sprintf("[%s] Proposals' tallies are filled adequately", $title)
                 );
             }
             $i++;
         }
 
     }
+
 
 
     public function testGetMedianGradeIndex()
