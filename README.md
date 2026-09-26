@@ -1,15 +1,24 @@
 # Majority Judgment PHP Library
 
-Deliberate majority judgment polls ⚖.
+[![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-php?style=for-the-badge)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-php?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-php/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/MieuxVoter/majority-judgment-library-php/build.yml?style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-php/actions)
+[![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-library-php?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-library-php)
+[![Join the Discord chat at https://discord.gg/k9YRuZPSZs](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/k9YRuZPSZs)
+
+
+Rank candidates of Majority Judgment polls.
 
 
 ## Features
 
-- Majority judgment deliberation from merit profiles
-- Score based, efficiency should scale well (algo is parallelizable)
-- Interface-oriented, test-driven code
-- Extensible to get other judgments (usual, central, etc.)
-- Made by [MieuxVoter](https://mieuxvoter.fr)'s volunteers
+- [x] Majority judgment deliberation from merit profiles
+- [x] Fast & extensible
+- [x] Supports billions of voters
+- [x] Supports thousands of candidates
+- [x] Interface-oriented, test-driven code
+- [x] Room for other majority systems (usual, central, etc.)
+- [x] Using composer and PSR-4 namespaces
 
 
 ## Usage example
@@ -56,8 +65,8 @@ use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
 $tally = Balancer::applyStaticDefault($tally);
 // or
 $tally = Balancer::applyMedianDefault($tally);
-// or
-$tally = Balancer::applyNormalization($tally);
+// or (TODO)
+//$tally = Balancer::applyNormalization($tally);
 
 ```
 
