@@ -71,7 +71,7 @@ Any object implementing `PollTallyInterface` may be used as input.
 
 See the tests in `test/`.
 
-    composer install --dev
-    vendor/phpunit/phpunit/phpunit -v test
+    composer install
+    vendor/phpunit/phpunit/phpunit test
 
 
