@@ -21,13 +21,20 @@ Rank candidates of Majority Judgment polls.
 - [x] Using composer and PSR-4 namespaces
 
 
-## Usage example
+## Installation
 
 Require it in your own project, using composer:
 
     composer require mieuxvoter/majority-judgment
 
-Use it:
+
+## Usage example
+
+Let's say you have a poll with two candidates and merit profiles like so:
+
+![Two merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-php.svg)
+
+You can get the rank of each candidate like so:
 
 ```php
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
