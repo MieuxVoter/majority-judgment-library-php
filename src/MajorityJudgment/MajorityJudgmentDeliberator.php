@@ -15,7 +15,7 @@ use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 /**
  * Score-based Majority Judgment deliberator.
  *
- * TODO: add links to relevant papers and perhaps wikipedia page
+ * TODO: add links to relevant papers and perhaps Wikipedia page
  * https://scholar.google.fr/scholar?q=majority+judgment
  *
  * Ideally, since this algorithm is parallelizable per proposal,
@@ -60,7 +60,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @param mixed $settings An instance of the class provided by `getOptionsClass()`.
      * @return PollResultInterface
      */
-    public function deliberate(PollTallyInterface $pollTally, $settings=null): PollResultInterface
+    public function deliberate(PollTallyInterface $pollTally, $settings = null): PollResultInterface
     {
         if (null == $settings) {
             $settings = new MajorityJudgmentSettings();
@@ -80,8 +80,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         // II. Sort the proposals using their score (higher is "better")
         $sortSuccess = usort(
             $proposalResults,
-            function(ProposalResult $rpa, ProposalResult $rpb)
-            {
+            function (ProposalResult $rpa, ProposalResult $rpb) {
                 return strcmp($rpb->getScore(), $rpa->getScore());
             }
         );
@@ -90,7 +89,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         // III. Compute the rank of each proposal
         $rank = 1;  // human-centric value, so starts at 1 ("best" proposal)
         $amountOfProposals = count($proposalResults);
-        for ($i = 0 ; $i < $amountOfProposals ; $i++) {
+        for ($i = 0; $i < $amountOfProposals; $i++) {
 
             if ($i == 0) {
                 $proposalResults[$i]->setRank($rank);
@@ -98,10 +97,10 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
                 if (
                     $proposalResults[$i]->getScore()
                     ==  // Wow, we have a *perfect* ex-æquo → same rank
-                    $proposalResults[$i-1]->getScore()
+                    $proposalResults[$i - 1]->getScore()
                 ) {
                     $proposalResults[$i]->setRank(
-                        $proposalResults[$i-1]->getRank()
+                        $proposalResults[$i - 1]->getRank()
                     );
                 } else {
                     $proposalResults[$i]->setRank($rank);
@@ -129,10 +128,10 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @return ProposalResult
      */
     static function computeProposalResult( // computeProposalResultWithScoreOnly?
-        ProposalTallyInterface $proposalTally,
-        int $participantsAmount,
+        ProposalTallyInterface   $proposalTally,
+        int                      $participantsAmount,
         MajorityJudgmentSettings $settings
-    ) : ProposalResult
+    ): ProposalResult
     {
         $proposalResult = new ProposalResult();
         $proposalResult->setProposal($proposalTally->getProposal());
@@ -194,14 +193,14 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
 
         // V. Compute a lexicographical score (higher is "better")
         $score = "";
-        for ($i = 0 ; $i < $amountOfGrades ; $i++) {
+        for ($i = 0; $i < $amountOfGrades; $i++) {
             if (0 < $i) {
                 $score .= '/';
             }
 
             $medianGradeIndex = self::getMedianGradeIndex($tallies);
             $score .= sprintf(
-                "%0".((string) self::GRADES_AMOUNT_MAX_DIGITS)."d",
+                "%0" . ((string)self::GRADES_AMOUNT_MAX_DIGITS) . "d",
                 $medianGradeIndex
             );
 
@@ -220,7 +219,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
             // Could be bumped up by deriving the $amountOfDigits from $participantsAmount.
             $amountOfDigits = self::PARTICIPANTS_AMOUNT_MAX_DIGITS;
             $score .= sprintf(
-                "%0".($amountOfDigits+1)."d",
+                "%0" . ($amountOfDigits + 1) . "d",
                 pow(10, $amountOfDigits) + $groupSign * $groupSize
             );
 
@@ -251,7 +250,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      *   Use the low (default) or high median, when there's an EVEN amount of judgments.
      * @return int
      */
-    static function getMedianGradeIndex($tallies, $low=true): int
+    static function getMedianGradeIndex(array $tallies, bool $low = true): int
     {
         // We could perhaps pass this $total as parameter,
         // but that would mean we trust that the total is correct, since
@@ -315,7 +314,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @param array $tallies
      * @return array [groupSize, groupSign, groupGrade]
      */
-    static function getBiggestGroup($aroundGradeIndex, array $tallies) : array
+    static function getBiggestGroup($aroundGradeIndex, array $tallies): array
     {
         $belowGroupSize = 0;
         $belowGroupSign = -1;
@@ -362,7 +361,7 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
      * @param $fromGrade
      * @param $intoGrade
      */
-    static function regradeJudgments(&$tallies, $fromGrade, $intoGrade)
+    static function regradeJudgments(&$tallies, $fromGrade, $intoGrade): void
     {
         $amountOfGrades = count($tallies);
         assert(
