@@ -1,19 +1,19 @@
 {
   "name": "mieuxvoter/majority-judgment",
-  "description": "Deliberate your polls using Majority Judgment with a fast, robust, interface-oriented and scalable algorithm.",
+  "description": "Rank the candidates of your polls using Majority Judgment with a fast, robust, interface-oriented and scalable algorithm.",
   "license": "MIT",
   "type": "library",
   "authors": [
     {
       "name": "MieuxVoter",
-      "email": "devteam@mieuxvoter.fr"
+      "email": "dev@mieuxvoter.fr"
     }
   ],
   "require": {
-    "php": "^7.4"
+    "php": "^8|^9"
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.6"
+    "phpunit/phpunit": "~12"
   },
   "autoload": {
     "psr-4": {

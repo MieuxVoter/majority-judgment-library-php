@@ -1,20 +1,19 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Test;
-
 
 use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
 use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 
 class MajorityJudgmentDeliberatorTest extends TestCase
 {
 
-    public function provideDeliberate()
+    public static function provideDeliberate(): array
     {
         return [
 
@@ -238,16 +237,15 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         ];
     }
 
-
-    /**
-     * @dataProvider provideDeliberate
-     *
-     * @param $amountOfJudgments
-     * @param $tallyPerProposal
-     * @param $expectedResults
-     */
-    public function testDeliberate($title, $amountOfJudgments, $defaultJudgment, $tallyPerProposal, $expectedResults) {
-
+    #[DataProvider('provideDeliberate')]
+    public function testDeliberate(
+        $title,
+        $amountOfJudgments,
+        $defaultJudgment,
+        $tallyPerProposal,
+        $expectedResults,
+    )
+    {
         $deliberator = new MajorityJudgmentDeliberator();
         $settings = new MajorityJudgmentSettings();
         $pollTally = new ArrayPollTally(
@@ -304,7 +302,6 @@ class MajorityJudgmentDeliberatorTest extends TestCase
         }
 
     }
-
 
 
     public function testGetMedianGradeIndex()
