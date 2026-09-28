@@ -16,9 +16,9 @@ Rank candidates of Majority Judgment polls.
 - [x] Fast & extensible
 - [x] Supports billions of voters
 - [x] Supports thousands of candidates
-- [x] Interface-oriented, test-driven code
-- [x] Room for other majority systems (usual, central, etc.)
-- [x] Using composer and PSR-4 namespaces
+- [x] Test-Driven Development
+- [x] No floating-point arithmetic
+- [x] Using composer and namespaces
 
 
 ## Installation
@@ -30,7 +30,7 @@ Require it in your own project, using composer:
 
 ## Usage example
 
-Let's say you have a poll with two candidates and merit profiles like so:
+Let's say you have a poll with three candidates and merit profiles like so:
 
 ![Three merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example.svg)
 
@@ -101,16 +101,10 @@ $tally = Balancer::applyMedianDefault($tally);
 ```
 
 
-## Interface-oriented
-
-Any object implementing `PollTallyInterface` may be used as input.
-
-
 ### Testing
 
 See the tests in `test/`.
 
     composer install
-    vendor/phpunit/phpunit/phpunit test
-
+    vendor/bin/phpunit test
 
