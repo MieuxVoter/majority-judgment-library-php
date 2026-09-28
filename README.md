@@ -92,8 +92,7 @@ If your tally is unbalanced, because some proposals received more judgments than
 you will need to balance the tally using one of the provided balancing methods (or your own):
 
 ```php
-
-use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
+use MieuxVoter\MajorityJudgment\Balancer;
 
 $tally = Balancer::applyStaticDefault($tally);
 // or

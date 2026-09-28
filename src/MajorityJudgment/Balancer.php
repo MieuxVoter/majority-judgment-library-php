@@ -1,6 +1,16 @@
 <?php
 
-namespace MieuxVoter\MajorityJudgment\Model\Tally;
+namespace MieuxVoter\MajorityJudgment;
+
+use MieuxVoter\MajorityJudgment\Model\Tally\GradeTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\GradeTallyInterface;
+use MieuxVoter\MajorityJudgment\Model\Tally\MirrorPollTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\MirrorProposalTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\PollTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\PollTallyInterface;
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTally;
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyAnalysis;
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 
 /**
  * Helps attribute default judgments to balance the proposals tallies,
@@ -8,21 +18,6 @@ namespace MieuxVoter\MajorityJudgment\Model\Tally;
  */
 class Balancer
 {
-    static function guessAmountOfParticipants(
-        PollTallyInterface $tally,
-    ): int {
-        $maxAmountOfParticipants = 0;
-        foreach ($tally->getProposalsTallies() as $proposalTally) {
-            $currentAmountOfParticipants = 0;
-            foreach ($proposalTally->getGradesTallies() as $gradeTally) {
-                $currentAmountOfParticipants += $gradeTally->getTally();
-            }
-            $maxAmountOfParticipants = max($maxAmountOfParticipants, $currentAmountOfParticipants);
-        }
-
-        return $maxAmountOfParticipants;
-    }
-
     /**
      * Creates and returns a new poll tally with balanced proposal tallies.
      *
@@ -30,10 +25,10 @@ class Balancer
      * @param int $defaultGradeIndex 0 === "worst" grade
      * @return PollTallyInterface A new object with balanced tallies
      */
-    static function applyStaticDefault(
+    static function balanceUsingStaticDefaultGrade(
         PollTallyInterface $tally,
         int                $defaultGradeIndex = 0,
-        int                $amountOfParticipants = 0,
+        int                $amountOfParticipants = -1,
     ): PollTallyInterface
     {
         assert($defaultGradeIndex >= 0, "Default grade must be ≥ than zero.");
@@ -52,13 +47,28 @@ class Balancer
             );
         }
 
-        return new MirrorPollTally(
-            $amountOfParticipants,
+        return new PollTally(
             $newProposalsTallies,
         );
     }
 
-    static function applyStaticDefaultToProposal(
+    protected static function guessAmountOfParticipants(
+        PollTallyInterface $tally,
+    ): int
+    {
+        $maxAmountOfParticipants = 0;
+        foreach ($tally->getProposalsTallies() as $proposalTally) {
+            $currentAmountOfParticipants = 0;
+            foreach ($proposalTally->getGradesTallies() as $gradeTally) {
+                $currentAmountOfParticipants += $gradeTally;
+            }
+            $maxAmountOfParticipants = max($maxAmountOfParticipants, $currentAmountOfParticipants);
+        }
+
+        return $maxAmountOfParticipants;
+    }
+
+    protected static function applyStaticDefaultToProposal(
         ProposalTallyInterface $proposalTally,
         int                    $totalParticipantsAmount,
         int                    $defaultGradeIndex = 0
@@ -67,8 +77,7 @@ class Balancer
         $gradesTallies = $proposalTally->getGradesTallies();
         $proposalParticipantsAmount = 0;
         foreach ($gradesTallies as $gradeIndex => $gradeTally) {
-            /** @var GradeTallyInterface $gradeTally */
-            $proposalParticipantsAmount += $gradeTally->getTally();
+            $proposalParticipantsAmount += $gradeTally;
         }
         $missingJudgmentsAmount = $totalParticipantsAmount - $proposalParticipantsAmount;
         assert(
@@ -81,14 +90,9 @@ class Balancer
             if ($defaultGradeIndex === $gradeIndex) {
                 $gradeMissingJudgmentsAmount = $missingJudgmentsAmount;
             }
-            $newGradesTallies[] = new GradeTally(
-                $gradeTally->getGrade(),
-                $gradeTally->getProposal(),
-                $gradeTally->getTally() + $gradeMissingJudgmentsAmount
-            );
+            $newGradesTallies[] = $gradeTally + $gradeMissingJudgmentsAmount;
         }
-        return new MirrorProposalTally(
-            $proposalTally->getProposal(),
+        return new ProposalTally(
             $newGradesTallies
         );
     }
@@ -109,8 +113,7 @@ class Balancer
             );
         }
 
-        return new MirrorPollTally(
-            $totalParticipantsAmount,
+        return new PollTally(
             $newProposalsTallies
         );
     }
@@ -131,8 +134,7 @@ class Balancer
 //            );
 //        }
 
-        return new MirrorPollTally(
-            $totalParticipantsAmount,
+        return new PollTally(
             $newProposalsTallies
         );
     }

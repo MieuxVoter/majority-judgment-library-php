@@ -3,28 +3,59 @@
 namespace MieuxVoter\MajorityJudgment\Model\Tally;
 
 use JetBrains\PhpStorm\NoReturn;
-use MieuxVoter\MajorityJudgment\MajorityJudgment;
+use MieuxVoter\MajorityJudgment\Balancer;
 use PHPUnit\Framework\TestCase;
 
 class BalancerTest extends TestCase
 {
     #[NoReturn]
-    public function testApplyNormalization()
+    public function testBalanceUsingStaticDefaultGrade()
     {
-        // FIXME: actually test the normalization :3  (I'm rewriting everything)
-        $pollTally = new ArrayPollTally(
+        $initialPollTally = new ArrayPollTally(
             [
                 "Arancini" => [1, 2, 3, 4],
-                "Burger" => [4, 3, 2, 1],
-                "Chips" => [2, 3, 3, 2],
+                "Burger" => [4, 0, 0, 0],
+                "Chips" => [0, 1, 1, 2],
             ],
         );
-        $mj = new MajorityJudgment();
-        $result = $mj->deliberate($pollTally);
 
-        $this->assertSameSize(
-            $result->getProposalResults(),
-            $result->getProposalResultsRanked(),
+        $balancedPollTally = Balancer::balanceUsingStaticDefaultGrade(
+            $initialPollTally, 0,
+        );
+
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [1, 2, 3, 4],
+            $balancedPollTally->getProposalsTallies()[0]->getGradesTallies(),
+            [],
+        );
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [10, 0, 0, 0],
+            $balancedPollTally->getProposalsTallies()[1]->getGradesTallies(),
+            [],
+        );
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [6, 1, 1, 2],
+            $balancedPollTally->getProposalsTallies()[2]->getGradesTallies(),
+            [],
+        );
+
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [1, 2, 3, 4],
+            $initialPollTally->getProposalsTallies()[0]->getGradesTallies(),
+            [],
+            "Initial poll tally should be unchanged (1/3)",
+        );
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [4, 0, 0, 0],
+            $initialPollTally->getProposalsTallies()[1]->getGradesTallies(),
+            [],
+            "Initial poll tally should be unchanged (2/3)",
+        );
+        $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+            [0, 1, 1, 2],
+            $initialPollTally->getProposalsTallies()[2]->getGradesTallies(),
+            [],
+            "Initial poll tally should be unchanged (3/3)",
         );
     }
 }
