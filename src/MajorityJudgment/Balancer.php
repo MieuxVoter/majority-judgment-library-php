@@ -2,10 +2,6 @@
 
 namespace MieuxVoter\MajorityJudgment;
 
-use MieuxVoter\MajorityJudgment\Model\Tally\GradeTally;
-use MieuxVoter\MajorityJudgment\Model\Tally\GradeTallyInterface;
-use MieuxVoter\MajorityJudgment\Model\Tally\MirrorPollTally;
-use MieuxVoter\MajorityJudgment\Model\Tally\MirrorProposalTally;
 use MieuxVoter\MajorityJudgment\Model\Tally\PollTally;
 use MieuxVoter\MajorityJudgment\Model\Tally\PollTallyInterface;
 use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTally;
@@ -49,6 +45,31 @@ class Balancer
 
         return new PollTally(
             $newProposalsTallies,
+        );
+    }
+
+    static function balanceUsingMedianDefaultGrade(
+        PollTallyInterface $tally,
+        int                $amountOfParticipants = -1,
+    ): PollTallyInterface
+    {
+        $guessedAmountOfParticipants = self::guessAmountOfParticipants($tally);
+        if ($amountOfParticipants <= 0) {
+            $amountOfParticipants = $guessedAmountOfParticipants;
+        }
+
+        $newProposalsTallies = [];
+        foreach ($tally->getProposalsTallies() as $proposalTally) {
+            $analysis = new ProposalTallyAnalysis($proposalTally);
+            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
+                $proposalTally,
+                $amountOfParticipants,
+                $analysis->getMedianGrade()
+            );
+        }
+
+        return new PollTally(
+            $newProposalsTallies
         );
     }
 
@@ -97,33 +118,10 @@ class Balancer
         );
     }
 
-    static function applyMedianDefault(
-        PollTallyInterface $tally
-    ): PollTallyInterface
-    {
-        $totalParticipantsAmount = $tally->getParticipantsAmount();
-
-        $newProposalsTallies = [];
-        foreach ($tally->getProposalsTallies() as $proposalTally) {
-            $analysis = new ProposalTallyAnalysis($proposalTally);
-            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
-                $proposalTally,
-                $totalParticipantsAmount,
-                $analysis->getMedianGradeIndex()
-            );
-        }
-
-        return new PollTally(
-            $newProposalsTallies
-        );
-    }
-
     static function applyNormalization(
         PollTallyInterface $tally
     ): PollTallyInterface
     {
-        $totalParticipantsAmount = $tally->getParticipantsAmount();
-
         $newProposalsTallies = [];
 //        foreach ($tally->getProposalsTallies() as $proposalTally) {
 //            $analysis = new ProposalTallyAnalysis($proposalTally);

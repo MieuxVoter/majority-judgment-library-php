@@ -45,8 +45,8 @@ class ProposalTallyAnalysis
         $this->amountOfJudgments = 0;
         $tallies = []; // same as ProposalTallyInterface but in primitives form
         foreach ($gradesTallies as $gradeTally) {
-            $tallies[] = $gradeTally->getTally();
-            $this->amountOfJudgments += $gradeTally->getTally();
+            $tallies[] = $gradeTally;
+            $this->amountOfJudgments += $gradeTally;
             $this->amountOfGrades += 1;
         }
 

@@ -89,12 +89,13 @@ foreach($result->getProposalResultsRanked() as $proposalResult) {
 ### Unbalanced Tallies
 
 If your tally is unbalanced, because some proposals received more judgments than others,
-you will need to balance the tally using one of the provided balancing methods (or your own):
+you will need to balance the tally using one of the provided balancing methods (or your own).
+
+
 
 #### Using a Static Default Grade
 
 The most common balancing strategy is to consider missing judgments as of the "worst" grade.
-
 This incentivizes candidates to be clear and to promote themselves.
 
 Here's how one can use the `Balancer` to balance a poll tally:
@@ -120,6 +121,35 @@ print_r($balancedPollTally->getProposalsTallies()[2]->getGradesTallies());
 // [ 10, 0, 0, 0 ]
 // [  6, 1, 1, 2 ]
 ```
+
+#### Using the Median Grade
+
+I can't fathom why you'd want this, but here it is anyway:
+
+```php
+$initialPollTally = new ArrayPollTally(
+    [
+        "Arancini" => [1, 2, 3, 4],
+        "Burger" => [2, 0, 0, 0],
+        "Chips" => [0, 1, 1, 0],
+    ],
+);
+
+$balancedPollTally = Balancer::balanceUsingMedianDefaultGrade($initialPollTally);
+
+print_r($balancedPollTally->getProposalsTallies()[0]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[1]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[2]->getGradesTallies());
+
+// [1, 2, 3, 4]
+// [10, 0, 0, 0]
+// [0, 9, 1, 0]
+```
+
+> [!WARNING]
+> This balancing strategy is not very interesting, nor fair.
+> You probably should prefer normalization, or using the lowest grade.
+
 
 
 ### Testing
