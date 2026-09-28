@@ -1,24 +1,15 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Tally;
-
 
 /**
  * The Tally for a Proposal, that is the tallies for each Grade.
- *
- * Interface ProposalTallyInterface
- * @package MieuxVoter\MajorityJudgment\Tally
+ * This is also known as Merit Profile.
  */
 interface ProposalTallyInterface
 {
     /**
-     * @return mixed
+     * @return iterable<int>
      */
-    public function getProposal();
-
-    /**
-     * @return GradeTallyInterface[]
-     */
-    public function getGradesTallies() : iterable;
+    public function getGradesTallies(): iterable;
 }

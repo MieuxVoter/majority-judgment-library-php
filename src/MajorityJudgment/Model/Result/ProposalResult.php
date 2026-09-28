@@ -1,33 +1,16 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Result;
-
 
 /**
  * An element of the leaderboard of a PollResult.
- *
- * Class ProposalResult
- * @package MieuxVoter\MajorityJudgment\Result
  */
 class ProposalResult
 {
-
     /**
-     * One of the proposals submitted in the PollTally.
-     * It may have any type, for convenience.
-     *
-     * @var mixed $proposal
+     * Index of the Proposal in the input array of tallies.
      */
-    protected $proposal;
-
-    /**
-     * The amount of judgments received by this proposal on each grade,
-     * from 'lowest|worst' grade to 'highest|best' grade.
-     *
-     * @var array $tally Array of int
-     */
-    protected $tally;
+    protected int $index;
 
     /**
      * Rank of the Proposal, in the Result.
@@ -35,82 +18,48 @@ class ProposalResult
      * Two proposals may share the same rank.
      * The "best" proposal will have rank 1.
      * The rank increases continuously.
-     *
-     * @var int $rank
      */
-    protected $rank;
-
+    protected int $rank;
 
     /**
      * The higher the score, the better this Proposal is considered.
      * It depends on the meaning of the grades, of course.
-     * Higher scores means higher grades; and vice-versa.
+     * Higher scores means higher grades; and vice versa.
      * Scores are strings, compared lexicographically.
      *
      * @var string $score
      */
-    protected $score;
-
-
-    /**
-     * Median Grade.
-     *
-     * @var mixed $median
-     */
-    protected $median;
-
+    protected string $score;
 
     /**
-     * @return mixed
+     * Median Grade received by the Proposal.
      */
-    public function getProposal()
+    protected int $median;
+
+    public function getIndex(): int
     {
-        return $this->proposal;
+        return $this->index;
     }
 
-    /**
-     * @param mixed $proposal
-     */
-    public function setProposal($proposal): void
+    public function setIndex(int $index): static
     {
-        $this->proposal = $proposal;
+        $this->index = $index;
+
+        return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getTally(): array
-    {
-        return $this->tally;
-    }
-
-    /**
-     * @param array $tally
-     */
-    public function setTally(array $tally): void
-    {
-        $this->tally = $tally;
-    }
-
-    /**
-     * @return int
-     */
     public function getRank(): int
     {
         return $this->rank;
     }
 
-    /**
-     * @param int $rank
-     */
-    public function setRank(int $rank): void
+    public function setRank(int $rank): static
     {
         $this->rank = $rank;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getScore(): string
     {
         return $this->score;
@@ -124,20 +73,16 @@ class ProposalResult
         $this->score = $score;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMedian()
+    public function getMedian(): int
     {
         return $this->median;
     }
 
     /**
-     * @param mixed $median
+     * @param int $median
      */
-    public function setMedian($median): void
+    public function setMedian(int $median): void
     {
         $this->median = $median;
     }
-
 }

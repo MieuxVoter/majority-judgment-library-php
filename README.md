@@ -37,25 +37,46 @@ Let's say you have a poll with two candidates and merit profiles like so:
 You can get the rank of each candidate like so:
 
 ```php
-use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
-use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
+use MieuxVoter\MajorityJudgment\MajorityJudgment;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 
-$tally = new ArrayPollTally([
-    'Proposal A' => [1, 1, 4, 3, 7, 4, 1], // amount of judgments for each grade
-    'Proposal B' => [0, 2, 4, 6, 4, 2, 3], // (worst grade to best grade)
-]);
+$grades = [
+    "to reject",
+    "insufficient",
+    "passable",
+    "somewhat good",
+    "good",
+    "very good",
+    "excellent",
+];
+$proposals = [
+    "Arancini",
+    "Burger",
+    "Chips",
+];
+$meritProfiles = [
+    [1, 1, 4, 3, 7, 4, 1], // for each proposal, tally the
+    [2, 2, 5, 5, 5, 0, 2], // amount of judgments for each grade
+    [0, 1, 2, 1, 6, 7, 4], // from "worst" grade to "best" grade
+];
 
-$deliberator = new MajorityJudgmentDeliberator();
+$pollTally = new ArrayPollTally($meritProfiles);
+$mj = new MajorityJudgment();
+$result = $mj->deliberate($pollTally);
 
-$result = $deliberator->deliberate($tally);
-// $result is a PollResultInterface
-
-foreach($result->getProposalResults() as $proposalResult) {
-    // … Do something
-    print($proposalResult->getProposal());
-    print($proposalResult->getRank());
+foreach($result->getProposalResultsRanked() as $proposalResult) {
+    // … Do something, for example:
+    print(sprintf(
+        "#%d %s (%s)\n",
+        $proposalResult->getRank(),
+        $proposals[$proposalResult->getIndex()],
+        $grades[$proposalResult->getMedian()],
+    ));
 }
+
+// #1 Chips (very good)
+// #2 Arancini (good)
+// #3 Burger (somewhat good)
 
 ```
 

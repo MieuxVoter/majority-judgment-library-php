@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Tally;
-
 
 /**
  * A Poll Tally holds the amount of Judgments for each Grade, on each Proposal.
@@ -22,11 +20,11 @@ interface PollTallyInterface
     /**
      * Total amount of Participants in the Poll.
      * Participants are not required to give a Grade to each Proposal,
-     * so this information helps accounting for default Grades.
+     * so this information helps account for default Grades.
      *
      * @return int
      */
-    public function getParticipantsAmount() : int;
+    //public function getParticipantsAmount(): int;
 
     /**
      * Tallies for each Proposal.
@@ -39,5 +37,5 @@ interface PollTallyInterface
      *
      * @return ProposalTallyInterface[]
      */
-    public function getProposalsTallies() : iterable;
+    public function getProposalsTallies(): iterable;
 }

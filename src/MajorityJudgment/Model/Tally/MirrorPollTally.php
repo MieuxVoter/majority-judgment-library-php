@@ -33,7 +33,7 @@ class MirrorPollTally implements PollTallyInterface
     /**
      * Total amount of Participants in the Poll.
      * Participants are not required to give a Grade to each Proposal,
-     * so this information helps accounting for default Grades.
+     * so this information helps account for default Grades.
      *
      * @return int
      */

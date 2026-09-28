@@ -1,109 +1,71 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment;
 
-
-use MieuxVoter\MajorityJudgment\Model\Result\GenericPollResult;
+use MieuxVoter\MajorityJudgment\Model\Result\PollResult;
 use MieuxVoter\MajorityJudgment\Model\Result\PollResultInterface;
 use MieuxVoter\MajorityJudgment\Model\Result\ProposalResult;
-use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
 use MieuxVoter\MajorityJudgment\Model\Tally\PollTallyInterface;
 use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 
-
 /**
- * Score-based Majority Judgment deliberator.
- *
- * TODO: add links to relevant papers and perhaps Wikipedia page
- * https://scholar.google.fr/scholar?q=majority+judgment
+ * Rank proposals using Majority Judgment.
  *
  * Ideally, since this algorithm is parallelizable per proposal,
  * we could support `parallel` if the need arises.
  * See https://www.php.net/manual/fr/intro.parallel.php
  * This would enable us to get support for huge amounts of proposals.
- *
- * Tests: Tests/MajorityJudgmentDeliberatorTest.php
- *
- * Class MajorityJudgmentDeliberator
- * @package MieuxVoter\MajorityJudgment
  */
-class MajorityJudgmentDeliberator implements DeliberatorInterface
+class MajorityJudgment
 {
-    // These could be derived from the data instead of being set arbitrarily like this
+    // TODO: These could be derived from the data instead of being set arbitrarily like this
     const GRADES_AMOUNT_MAX_DIGITS = 3; // 10e3 = 1000 grades should be more than enough
     const PARTICIPANTS_AMOUNT_MAX_DIGITS = 11; // 10e11 = 10 times the humans on Earth in 2020
-
-
-    /**
-     * Class name of the Options class to use with this Resolver.
-     * Usually specifies what the default Grade is, that kind of thing.
-     *
-     * The returned class MUST validate `class_exists()`.
-     * Probably best to use the `MayAwesomeOptions::class` syntax in here.
-     * This enables each Resolver to have their own custom set of options.
-     * If your resolver has no options, use
-     * return \MieuxVoter\MajorityJudgment\Resolver\Options\NoOptions::class;
-     *
-     * @return string
-     */
-    public function getSettingsClass(): string
-    {
-        return MajorityJudgmentSettings::class;
-    }
 
     /**
      * For a given Poll Tally, this computes a Result and returns it.
      * This is the heart of the Ranking, where the business logic resides.
-     *
-     * @param PollTallyInterface $pollTally
-     * @param mixed $settings An instance of the class provided by `getOptionsClass()`.
-     * @return PollResultInterface
      */
-    public function deliberate(PollTallyInterface $pollTally, $settings = null): PollResultInterface
+    public function deliberate(PollTallyInterface $pollTally): PollResultInterface
     {
-        if (null == $settings) {
-            $settings = new MajorityJudgmentSettings();
-        }
         $proposalResults = [];
+        $proposalResultsRanked = [];
 
         // I. Compute the score of each proposal, skip the rank for now
-        foreach ($pollTally->getProposalsTallies() as $proposalsTally) {
-            $scoredProposal = self::computeProposalResult(
-                $proposalsTally,
-                $pollTally->getParticipantsAmount(),
-                $settings
-            );
+        foreach ($pollTally->getProposalsTallies() as $proposalIndex => $proposalsTally) {
+            $scoredProposal = self::computeProposalResult($proposalsTally);
+            $scoredProposal->setIndex($proposalIndex);
             $proposalResults[] = $scoredProposal;
+            $proposalResultsRanked[] = $scoredProposal;
         }
 
         // II. Sort the proposals using their score (higher is "better")
         $sortSuccess = usort(
-            $proposalResults,
-            function (ProposalResult $rpa, ProposalResult $rpb) {
-                return strcmp($rpb->getScore(), $rpa->getScore());
+            $proposalResultsRanked,
+            function (ProposalResult $a, ProposalResult $b) {
+                return strcmp($b->getScore(), $a->getScore());
             }
         );
         assert($sortSuccess, "Sorting by score must succeed!");
 
         // III. Compute the rank of each proposal
         $rank = 1;  // human-centric value, so starts at 1 ("best" proposal)
-        $amountOfProposals = count($proposalResults);
+        $amountOfProposals = count($proposalResultsRanked);
         for ($i = 0; $i < $amountOfProposals; $i++) {
 
             if ($i == 0) {
-                $proposalResults[$i]->setRank($rank);
+                $proposalResultsRanked[$i]->setRank($rank);
             } else {
                 if (
-                    $proposalResults[$i]->getScore()
+                    $proposalResultsRanked[$i]->getScore()
                     ==  // Wow, we have a *perfect* ex-æquo → same rank
-                    $proposalResults[$i - 1]->getScore()
+                    $proposalResultsRanked[$i - 1]->getScore()
                 ) {
-                    $proposalResults[$i]->setRank(
-                        $proposalResults[$i - 1]->getRank()
+                    $proposalResultsRanked[$i]->setRank(
+                        $proposalResultsRanked[$i - 1]->getRank()
                     );
                 } else {
-                    $proposalResults[$i]->setRank($rank);
+                    $proposalResultsRanked[$i]->setRank($rank);
                 }
             }
 
@@ -111,87 +73,41 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
         }
 
         // IV. We've got everything we need, time to build the Result
-        $result = new GenericPollResult($proposalResults);
-
-        return $result;
+        return new PollResult(
+            $proposalResults,
+            $proposalResultsRanked,
+        );
     }
-
 
     /**
      * Computes the score of the provided proposal.
      * Does not compute the rank ; this will be done by deliberate().
-     * Static (context-free) method for (later) easier parallelization.
      *
-     * @param ProposalTallyInterface $proposalTally
-     * @param int $participantsAmount
-     * @param MajorityJudgmentSettings $settings
-     * @return ProposalResult
+     * This is a static (context-free) method for (later) easier parallelization.
      */
-    static function computeProposalResult( // computeProposalResultWithScoreOnly?
-        ProposalTallyInterface   $proposalTally,
-        int                      $participantsAmount,
-        MajorityJudgmentSettings $settings
+    static function computeProposalResult(
+        ProposalTallyInterface $proposalTally,
     ): ProposalResult
     {
         $proposalResult = new ProposalResult();
-        $proposalResult->setProposal($proposalTally->getProposal());
 
         // I. Collect data and check its sanity
         $gradesTallies = $proposalTally->getGradesTallies();
-        $grades = [];  // "worst" to "best"
-        $tallies = [];  // same order as grades, is mutated by algorithm
-        $actualParticipantsAmount = 0;
+        $amountOfGrades = count($gradesTallies);
+        $tallies = [];  // working copy of $gradesTallies, mutated by algorithm
         foreach ($gradesTallies as $gradeTally) {
             assert(
-                $gradeTally->getProposal() == $proposalTally->getProposal(),
-                "Proposals must match."
-            );
-            $grade = $gradeTally->getGrade();
-            assert(
-                ! in_array($grade, $grades),
-                "Grades must be unique."
-            );
-            $grades[] = $grade;
-            $tally = $gradeTally->getTally();
-            assert(
-                0 <= $tally
-                &&
-                $participantsAmount >= $tally,
+                0 <= $gradeTally,
                 "Tally is within meaningful range."
             );
-            $tallies[] = $tally;
-            $actualParticipantsAmount += $tally;
-        }
-        $amountOfGrades = count($grades);
-
-        // II. Prepare a default Grade
-        $defaultGradeIndex = $settings->getDefaultGradeIndex();
-        assert(
-            0 <= $defaultGradeIndex
-            &&
-            $amountOfGrades > $defaultGradeIndex,
-            "Default grade is within range."
-        );
-        //$defaultGrade = $grades[$defaultGradeIndex];
-
-        // III. Fill the blanks with the default Grade
-        assert(
-            $actualParticipantsAmount <= $participantsAmount,
-            "The amount of participants is correct."
-        );
-        if ($actualParticipantsAmount < $participantsAmount) {
-            $tallies[$defaultGradeIndex] += $participantsAmount - $actualParticipantsAmount;
+            $tallies[] = $gradeTally;
         }
 
-        // III.b Store the "default grade" adjusted tally
-        $proposalResult->setTally(array_values($tallies));
-
-        // IV. Compute the median
+        // II. Compute the median
         $medianGradeIndex = self::getMedianGradeIndex($tallies);
-        $median = $grades[$medianGradeIndex];
-        $proposalResult->setMedian($median);
+        $proposalResult->setMedian($medianGradeIndex);
 
-        // V. Compute a lexicographical score (higher is "better")
+        // III. Compute a lexicographical score (higher is "better")
         $score = "";
         for ($i = 0; $i < $amountOfGrades; $i++) {
             if (0 < $i) {
@@ -204,15 +120,13 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
                 $medianGradeIndex
             );
 
-            // Collect biggest of the two groups of grades outside of the median.
+            // Collect biggest of the two groups of grades outside the median.
             // Group Grade is the index of the grade in the group that is adjacent to the median group.
             // Group Sign is:
             // - +1 if the group promotes higher grades (adhesion)
             // - -1 if the group promotes lower grades (contestation)
             // - ±0 if there is no spoon (nor group)
-            [$groupSize, $groupSign, $groupGrade] = self::getBiggestGroup(
-                $medianGradeIndex, $tallies
-            );
+            [$groupSize, $groupSign, $groupGrade] = self::getBiggestGroup($medianGradeIndex, $tallies);
 
             $score .= '_';
             // Note: the following caps the supported amount of participants.
@@ -225,13 +139,11 @@ class MajorityJudgmentDeliberator implements DeliberatorInterface
 
             self::regradeJudgments($tallies, $medianGradeIndex, $groupGrade);
         }
-
-        //dump("Score", $proposalTally->getProposal(), $score);
         $proposalResult->setScore($score);
 
+        // IV. All is done — except for the rank
         return $proposalResult;
     }
-
 
     /**
      * Find the index of the median grade from the given array of tallies.

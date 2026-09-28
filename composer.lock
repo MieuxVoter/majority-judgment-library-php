@@ -4,8 +4,73 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b30b57e8e8fbbc7c42bea0bcdc2ccaa2",
-    "packages": [],
+    "content-hash": "64b5f312959f50860cd8711629858a35",
+    "packages": [
+        {
+            "name": "phpmath/biginteger",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/domi41/biginteger.git",
+                "reference": "a868a64f481cdaab353ce08f6180ec9cfcf06c6f"
+            },
+            "require": {
+                "ext-gmp": "*",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpmath/coding-standard": "^1.0",
+                "phpunit/phpunit": "^11.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHP\\Math\\BigInteger\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PHP\\Math\\BigInteger\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "test-coverage": [
+                    "@putenv XDEBUG_MODE=coverage",
+                    "phpunit --coverage-html build/phpunit-coverage/"
+                ],
+                "check-style": [
+                    "vendor/bin/phpcs"
+                ],
+                "fix-style": [
+                    "vendor/bin/phpcbf"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Walter Tamboer",
+                    "homepage": "https://waltertamboer.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP library to work with big integers.",
+            "homepage": "https://github.com/phpmath/biginteger",
+            "keywords": [
+                "biginteger",
+                "integer",
+                "math",
+                "php8",
+                "phpmath"
+            ],
+            "time": "2025-09-05T08:04:12+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "myclabs/deep-copy",
@@ -1703,11 +1768,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "phpmath/biginteger": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4|^8"
+        "php": ">=8.2|^9",
+        "ext-gmp": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

@@ -1,26 +1,30 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Tally;
 
-
 /**
- * Helps attributing default judgments to balance the proposals tallies,
+ * Helps attribute default judgments to balance the proposals tallies,
  * so that all the tallies hold the same total amount of judgments.
- *
- * Not sure about the name Balancer.  Please share your suggestions :)
- *
- * - Defaulter: ?
- * - Normalizer: very (too?) generic
- *
- * Class Balancer
- * @package MieuxVoter\MajorityJudgment\Model\Tally
  */
 class Balancer
 {
+    static function guessAmountOfParticipants(
+        PollTallyInterface $tally,
+    ): int {
+        $maxAmountOfParticipants = 0;
+        foreach ($tally->getProposalsTallies() as $proposalTally) {
+            $currentAmountOfParticipants = 0;
+            foreach ($proposalTally->getGradesTallies() as $gradeTally) {
+                $currentAmountOfParticipants += $gradeTally->getTally();
+            }
+            $maxAmountOfParticipants = max($maxAmountOfParticipants, $currentAmountOfParticipants);
+        }
+
+        return $maxAmountOfParticipants;
+    }
 
     /**
-     * Creates an returns a new poll tally with
+     * Creates and returns a new poll tally with balanced proposal tallies.
      *
      * @param PollTallyInterface $tally IS TO BE DISCARDED (we don't deepcopy)
      * @param int $defaultGradeIndex 0 === "worst" grade
@@ -28,34 +32,37 @@ class Balancer
      */
     static function applyStaticDefault(
         PollTallyInterface $tally,
-        int $defaultGradeIndex = 0
-    ) : PollTallyInterface
+        int                $defaultGradeIndex = 0,
+        int                $amountOfParticipants = 0,
+    ): PollTallyInterface
     {
         assert($defaultGradeIndex >= 0, "Default grade must be ≥ than zero.");
-        $totalParticipantsAmount = $tally->getParticipantsAmount();
+        $guessedAmountOfParticipants = self::guessAmountOfParticipants($tally);
+        if ($amountOfParticipants <= 0) {
+            $amountOfParticipants = $guessedAmountOfParticipants;
+        }
         $proposalsTallies = $tally->getProposalsTallies();
 
         $newProposalsTallies = [];
-        foreach ($proposalsTallies as $proposalIndex => $proposalTally) {
-
+        foreach ($proposalsTallies as $proposalTally) {
             $newProposalsTallies[] = self::applyStaticDefaultToProposal(
                 $proposalTally,
-                $totalParticipantsAmount,
-                $defaultGradeIndex
+                $amountOfParticipants,
+                $defaultGradeIndex,
             );
         }
 
         return new MirrorPollTally(
-            $totalParticipantsAmount,
-            $newProposalsTallies
+            $amountOfParticipants,
+            $newProposalsTallies,
         );
     }
 
     static function applyStaticDefaultToProposal(
         ProposalTallyInterface $proposalTally,
-        int $totalParticipantsAmount,
-        int $defaultGradeIndex = 0
-    ) : ProposalTallyInterface
+        int                    $totalParticipantsAmount,
+        int                    $defaultGradeIndex = 0
+    ): ProposalTallyInterface
     {
         $gradesTallies = $proposalTally->getGradesTallies();
         $proposalParticipantsAmount = 0;
@@ -88,7 +95,7 @@ class Balancer
 
     static function applyMedianDefault(
         PollTallyInterface $tally
-    ) : PollTallyInterface
+    ): PollTallyInterface
     {
         $totalParticipantsAmount = $tally->getParticipantsAmount();
 
@@ -108,5 +115,26 @@ class Balancer
         );
     }
 
+    static function applyNormalization(
+        PollTallyInterface $tally
+    ): PollTallyInterface
+    {
+        $totalParticipantsAmount = $tally->getParticipantsAmount();
+
+        $newProposalsTallies = [];
+//        foreach ($tally->getProposalsTallies() as $proposalTally) {
+//            $analysis = new ProposalTallyAnalysis($proposalTally);
+//            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
+//                $proposalTally,
+//                $totalParticipantsAmount,
+//                $analysis->getMedianGradeIndex()
+//            );
+//        }
+
+        return new MirrorPollTally(
+            $totalParticipantsAmount,
+            $newProposalsTallies
+        );
+    }
 
 }
