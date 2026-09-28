@@ -9,6 +9,9 @@ namespace MieuxVoter\MajorityJudgment\Model\Tally;
 interface ProposalTallyInterface
 {
     /**
+     * Amounts of judgments received of each grade by this proposal.
+     * From "worst" grade to "best" grade.
+     *
      * @return iterable<int>
      */
     public function getGradesTallies(): iterable;

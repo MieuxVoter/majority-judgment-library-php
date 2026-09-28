@@ -18,11 +18,17 @@ class PollResult implements PollResultInterface
     {
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getProposalResults(): iterable
     {
         return $this->proposalResults;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getProposalResultsRanked(): iterable
     {
         return $this->proposalResultsRanked;

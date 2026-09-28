@@ -4,6 +4,9 @@ namespace MieuxVoter\MajorityJudgment\Model\Result;
 
 /**
  * An element of the leaderboard of a PollResult.
+ *
+ * Holds the rank of the proposal after ranking using Majority Judgment.
+ * Also holds the original index of the proposal in the input array of tallies.
  */
 class ProposalResult
 {
@@ -26,8 +29,6 @@ class ProposalResult
      * It depends on the meaning of the grades, of course.
      * Higher scores means higher grades; and vice versa.
      * Scores are strings, compared lexicographically.
-     *
-     * @var string $score
      */
     protected string $score;
 
@@ -36,6 +37,9 @@ class ProposalResult
      */
     protected int $median;
 
+    /**
+     * @see $index
+     */
     public function getIndex(): int
     {
         return $this->index;
@@ -48,6 +52,9 @@ class ProposalResult
         return $this;
     }
 
+    /**
+     * @see $rank
+     */
     public function getRank(): int
     {
         return $this->rank;
@@ -60,27 +67,27 @@ class ProposalResult
         return $this;
     }
 
+    /**
+     * @see $score
+     */
     public function getScore(): string
     {
         return $this->score;
     }
 
-    /**
-     * @param string $score
-     */
     public function setScore(string $score): void
     {
         $this->score = $score;
     }
 
+    /**
+     * @return int The index of the median grade of this proposal.
+     */
     public function getMedian(): int
     {
         return $this->median;
     }
 
-    /**
-     * @param int $median
-     */
     public function setMedian(int $median): void
     {
         $this->median = $median;

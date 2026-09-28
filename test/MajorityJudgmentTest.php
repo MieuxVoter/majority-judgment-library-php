@@ -92,6 +92,17 @@ class MajorityJudgmentTest extends TestCase
                     1,
                 ],
             ],
+            "A single candidate is allowed" => [
+                'tallies' => [
+                    [1, 1, 1],
+                ],
+                'expectedRanks' => [
+                    1,
+                ],
+                'expectedIndices' => [
+                    0,
+                ],
+            ],
         ];
     }
 

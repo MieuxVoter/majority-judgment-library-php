@@ -82,6 +82,9 @@ foreach($result->getProposalResultsRanked() as $proposalResult) {
 
 ![Three ranked merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-ranked.svg)
 
+> [!TIP]
+> These images were generated with our [online merit profile tool](https://educ.mieuxvoter.fr/).
+
 
 ### Unbalanced Tallies
 
@@ -97,7 +100,6 @@ $tally = Balancer::applyStaticDefault($tally);
 $tally = Balancer::applyMedianDefault($tally);
 // or (TODO)
 //$tally = Balancer::applyNormalization($tally);
-
 ```
 
 
