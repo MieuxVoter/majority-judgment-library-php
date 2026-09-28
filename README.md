@@ -32,7 +32,7 @@ Require it in your own project, using composer:
 
 Let's say you have a poll with two candidates and merit profiles like so:
 
-![Two merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-php.svg)
+![Three merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example.svg)
 
 You can get the rank of each candidate like so:
 
@@ -79,6 +79,8 @@ foreach($result->getProposalResultsRanked() as $proposalResult) {
 // #3 Burger (somewhat good)
 
 ```
+
+![Three ranked merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-ranked.svg)
 
 
 ### Unbalanced Tallies

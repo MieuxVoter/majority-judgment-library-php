@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<svg width="980.00" height="208.00"
+     viewBox="-16.00 -16.00 980.00 208.00"
+     xmlns="http://www.w3.org/2000/svg">
+<defs>
+<clipPath id="clipProposal0" ><rect x="0.00" y="0.00" width="948.00" height="48.00" /></clipPath>
+<clipPath id="clipProposal1" ><rect x="0.00" y="64.00" width="948.00" height="48.00" /></clipPath>
+<clipPath id="clipProposal2" ><rect x="0.00" y="128.00" width="948.00" height="48.00" /></clipPath>
+<pattern id="merit_pattern_nothing" x="0.00" y="0.00" width="1000.00" height="1000.00" patternUnits="userSpaceOnUse" >
+</pattern>
+<pattern id="merit_pattern_hexagons_1" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 6.00 L5.20 7.00 L5.20 9.00 L6.93 10.00 L8.66 9.00 L8.66 7.00 ZM13.86 -2.00 L12.12 -1.00 L12.12 1.00 L13.86 2.00 L15.59 1.00 L15.59 -1.00 ZM0.00 -2.00 L-1.73 -1.00 L-1.73 1.00 L0.00 2.00 L1.73 1.00 L1.73 -1.00 ZM13.86 14.00 L12.12 15.00 L12.12 17.00 L13.86 18.00 L15.59 17.00 L15.59 15.00 ZM0.00 14.00 L-1.73 15.00 L-1.73 17.00 L0.00 18.00 L1.73 17.00 L1.73 15.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<pattern id="merit_pattern_hexagons_2" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 4.00 L3.46 6.00 L3.46 10.00 L6.93 12.00 L10.39 10.00 L10.39 6.00 ZM13.86 -4.00 L10.39 -2.00 L10.39 2.00 L13.86 4.00 L17.32 2.00 L17.32 -2.00 ZM0.00 -4.00 L-3.46 -2.00 L-3.46 2.00 L0.00 4.00 L3.46 2.00 L3.46 -2.00 ZM13.86 12.00 L10.39 14.00 L10.39 18.00 L13.86 20.00 L17.32 18.00 L17.32 14.00 ZM0.00 12.00 L-3.46 14.00 L-3.46 18.00 L0.00 20.00 L3.46 18.00 L3.46 14.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<pattern id="merit_pattern_hexagons_3" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 2.00 L1.73 5.00 L1.73 11.00 L6.93 14.00 L12.12 11.00 L12.12 5.00 ZM13.86 -6.00 L8.66 -3.00 L8.66 3.00 L13.86 6.00 L19.05 3.00 L19.05 -3.00 ZM0.00 -6.00 L-5.20 -3.00 L-5.20 3.00 L0.00 6.00 L5.20 3.00 L5.20 -3.00 ZM13.86 10.00 L8.66 13.00 L8.66 19.00 L13.86 22.00 L19.05 19.00 L19.05 13.00 ZM0.00 10.00 L-5.20 13.00 L-5.20 19.00 L0.00 22.00 L5.20 19.00 L5.20 13.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<pattern id="merit_pattern_hexagons_4" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 0.00 L0.00 4.00 L0.00 12.00 L6.93 16.00 L13.86 12.00 L13.86 4.00 ZM13.86 -8.00 L6.93 -4.00 L6.93 4.00 L13.86 8.00 L20.78 4.00 L20.78 -4.00 ZM0.00 -8.00 L-6.93 -4.00 L-6.93 4.00 L0.00 8.00 L6.93 4.00 L6.93 -4.00 ZM13.86 8.00 L6.93 12.00 L6.93 20.00 L13.86 24.00 L20.78 20.00 L20.78 12.00 ZM0.00 8.00 L-6.93 12.00 L-6.93 20.00 L0.00 24.00 L6.93 20.00 L6.93 12.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<pattern id="merit_pattern_hexagons_5" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 -2.00 L-1.73 3.00 L-1.73 13.00 L6.93 18.00 L15.59 13.00 L15.59 3.00 ZM13.86 -10.00 L5.20 -5.00 L5.20 5.00 L13.86 10.00 L22.52 5.00 L22.52 -5.00 ZM0.00 -10.00 L-8.66 -5.00 L-8.66 5.00 L0.00 10.00 L8.66 5.00 L8.66 -5.00 ZM13.86 6.00 L5.20 11.00 L5.20 21.00 L13.86 26.00 L22.52 21.00 L22.52 11.00 ZM0.00 6.00 L-8.66 11.00 L-8.66 21.00 L0.00 26.00 L8.66 21.00 L8.66 11.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<pattern id="merit_pattern_hexagons_6" x="0.00" y="0.00" width="13.86" height="16.00" patternUnits="userSpaceOnUse" >
+<path d="M6.93 -4.00 L-3.46 2.00 L-3.46 14.00 L6.93 20.00 L17.32 14.00 L17.32 2.00 ZM13.86 -12.00 L3.46 -6.00 L3.46 6.00 L13.86 12.00 L24.25 6.00 L24.25 -6.00 ZM0.00 -12.00 L-10.39 -6.00 L-10.39 6.00 L0.00 12.00 L10.39 6.00 L10.39 -6.00 ZM13.86 4.00 L3.46 10.00 L3.46 22.00 L13.86 28.00 L24.25 22.00 L24.25 10.00 ZM0.00 4.00 L-10.39 10.00 L-10.39 22.00 L0.00 28.00 L10.39 22.00 L10.39 10.00 Z" stroke="#000000" stroke-opacity="0.380" stroke-width="0.8" fill="none" />
+</pattern>
+<filter id="merit_filter_clean_outline" >
+<feMorphology in="SourceAlpha" result="DILATED"  operator="dilate" radius="2 2" />
+<feFlood result="COLOR"  flood-color="#ffffff" flood-opacity="1" />
+<feComposite in="COLOR" in2="DILATED" result="OUTLINE"  operator="in" k1="0" k2="0" k3="0" k4="0" />
+<feDropShadow in="OUTLINE" result="SHADOWED_OUTLINE" dx="0.618000" dy="1.000000" stdDeviation="0.5" flood-color="#000000" flood-opacity="1.000" />
+<feMerge>
+<feMergeNode in="SHADOWED_OUTLINE"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+<filter id="merit_filter_blurry_outline" filterUnits="userSpaceOnUse" >
+<feDropShadow dx="-1" dy="-1" stdDeviation="0.5" flood-color="#ffffff" flood-opacity="0.784" />
+<feDropShadow dx="-1" dy="1" stdDeviation="0.5" flood-color="#ffffff" flood-opacity="0.784" />
+<feDropShadow dx="1" dy="-1" stdDeviation="0.5" flood-color="#ffffff" flood-opacity="0.784" />
+<feDropShadow dx="1" dy="1" stdDeviation="0.5" flood-color="#ffffff" flood-opacity="0.784" />
+</filter>
+</defs>
+<rect x="-16.00" y="-16.00" width="980.00" height="208.00" rx="12.00" ry="12.00" fill="#241f31" fill-opacity="1.000" />
+<rect x="0.00" y="0.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="#ed6f01" fill-opacity="1.000" />
+<rect x="0.00" y="0.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_1)" />
+<rect x="47.14" y="0.00" width="86.29" height="48.00" rx="6.00" ry="6.00" fill="#fab001" fill-opacity="1.000" />
+<rect x="47.14" y="0.00" width="86.29" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_2)" />
+<rect x="137.43" y="0.00" width="41.14" height="48.00" rx="6.00" ry="6.00" fill="#c5d300" fill-opacity="1.000" />
+<rect x="137.43" y="0.00" width="41.14" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_3)" />
+<rect x="182.57" y="0.00" width="266.86" height="48.00" rx="6.00" ry="6.00" fill="#7bbd3e" fill-opacity="1.000" />
+<rect x="182.57" y="0.00" width="266.86" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_4)" />
+<rect x="453.43" y="0.00" width="312.00" height="48.00" rx="6.00" ry="6.00" fill="#00a249" fill-opacity="1.000" />
+<rect x="453.43" y="0.00" width="312.00" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_5)" />
+<rect x="453.43" y="0.00" width="312.00" height="48.00" rx="6.00" ry="6.00" stroke="#dbe0ce" stroke-opacity="1.000" stroke-width=" 4" fill="none" />
+<rect x="769.43" y="0.00" width="178.57" height="48.00" rx="6.00" ry="6.00" fill="#017a36" fill-opacity="1.000" />
+<rect x="769.43" y="0.00" width="178.57" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_6)" />
+<line x1="474.00" y1="0.00" x2="474.00" y2="48.00" stroke="#010101" stroke-width="4" stroke-dasharray="6.472 4" filter="url(#merit_filter_blurry_outline)" />
+<text x="16.00" y="24.00" style="clip-path: url(#clipProposal0)" stroke="#000000" stroke-opacity="1.000" fill="#000000" fill-opacity="1.000" font-size="1.618em" font-family="Noto Sans, Arial, Helvetica, sans-serif" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >#1 ⋅ Chips<title>#1 ⋅ Chips</title></text>
+<text x="21.57" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >1</text>
+<text x="90.29" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >2</text>
+<text x="158.00" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >1</text>
+<text x="316.00" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >6</text>
+<text x="609.43" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >7</text>
+<text x="858.71" y="48.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >4</text>
+<rect x="0.00" y="64.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="#df3222" fill-opacity="1.000" />
+<rect x="0.00" y="64.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_nothing)" />
+<rect x="47.14" y="64.00" width="41.14" height="48.00" rx="6.00" ry="6.00" fill="#ed6f01" fill-opacity="1.000" />
+<rect x="47.14" y="64.00" width="41.14" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_1)" />
+<rect x="92.29" y="64.00" width="176.57" height="48.00" rx="6.00" ry="6.00" fill="#fab001" fill-opacity="1.000" />
+<rect x="92.29" y="64.00" width="176.57" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_2)" />
+<rect x="272.86" y="64.00" width="131.43" height="48.00" rx="6.00" ry="6.00" fill="#c5d300" fill-opacity="1.000" />
+<rect x="272.86" y="64.00" width="131.43" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_3)" />
+<rect x="408.29" y="64.00" width="312.00" height="48.00" rx="6.00" ry="6.00" fill="#7bbd3e" fill-opacity="1.000" />
+<rect x="408.29" y="64.00" width="312.00" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_4)" />
+<rect x="408.29" y="64.00" width="312.00" height="48.00" rx="6.00" ry="6.00" stroke="#dbe0ce" stroke-opacity="1.000" stroke-width=" 4" fill="none" />
+<rect x="724.29" y="64.00" width="176.57" height="48.00" rx="6.00" ry="6.00" fill="#00a249" fill-opacity="1.000" />
+<rect x="724.29" y="64.00" width="176.57" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_5)" />
+<rect x="904.86" y="64.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="#017a36" fill-opacity="1.000" />
+<rect x="904.86" y="64.00" width="43.14" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_6)" />
+<line x1="474.00" y1="64.00" x2="474.00" y2="112.00" stroke="#010101" stroke-width="4" stroke-dasharray="6.472 4" filter="url(#merit_filter_blurry_outline)" />
+<text x="16.00" y="88.00" style="clip-path: url(#clipProposal1)" stroke="#000000" stroke-opacity="1.000" fill="#000000" fill-opacity="1.000" font-size="1.618em" font-family="Noto Sans, Arial, Helvetica, sans-serif" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >#2 ⋅ Arancini<title>#2 ⋅ Arancini</title></text>
+<text x="21.57" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >1</text>
+<text x="67.71" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >1</text>
+<text x="180.57" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >4</text>
+<text x="338.57" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >3</text>
+<text x="564.29" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >7</text>
+<text x="812.57" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >4</text>
+<text x="926.43" y="112.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >1</text>
+<rect x="0.00" y="128.00" width="88.29" height="48.00" rx="6.00" ry="6.00" fill="#df3222" fill-opacity="1.000" />
+<rect x="0.00" y="128.00" width="88.29" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_nothing)" />
+<rect x="92.29" y="128.00" width="86.29" height="48.00" rx="6.00" ry="6.00" fill="#ed6f01" fill-opacity="1.000" />
+<rect x="92.29" y="128.00" width="86.29" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_1)" />
+<rect x="182.57" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="#fab001" fill-opacity="1.000" />
+<rect x="182.57" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_2)" />
+<rect x="408.29" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="#c5d300" fill-opacity="1.000" />
+<rect x="408.29" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_3)" />
+<rect x="408.29" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" stroke="#dbe0ce" stroke-opacity="1.000" stroke-width=" 4" fill="none" />
+<rect x="634.00" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="#7bbd3e" fill-opacity="1.000" />
+<rect x="634.00" y="128.00" width="221.71" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_4)" />
+<rect x="859.71" y="128.00" width="88.29" height="48.00" rx="6.00" ry="6.00" fill="#017a36" fill-opacity="1.000" />
+<rect x="859.71" y="128.00" width="88.29" height="48.00" rx="6.00" ry="6.00" fill="url(#merit_pattern_hexagons_6)" />
+<line x1="474.00" y1="128.00" x2="474.00" y2="176.00" stroke="#010101" stroke-width="4" stroke-dasharray="6.472 4" filter="url(#merit_filter_blurry_outline)" />
+<text x="16.00" y="152.00" style="clip-path: url(#clipProposal2)" stroke="#000000" stroke-opacity="1.000" fill="#000000" fill-opacity="1.000" font-size="1.618em" font-family="Noto Sans, Arial, Helvetica, sans-serif" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >#3 ⋅ Burger<title>#3 ⋅ Burger</title></text>
+<text x="44.14" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >2</text>
+<text x="135.43" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >2</text>
+<text x="293.43" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >5</text>
+<text x="519.14" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >5</text>
+<text x="744.86" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >5</text>
+<text x="903.86" y="176.00" fill="#000000" fill-opacity="1.000" stroke="none" font-size="0.88em" font-family="Noto Sans, Arial, Helvetica, sans-serif" text-anchor="middle" dominant-baseline="middle" filter="url(#merit_filter_clean_outline)" >2</text>
+</svg>
