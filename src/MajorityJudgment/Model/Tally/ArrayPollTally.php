@@ -19,19 +19,19 @@ class ArrayPollTally implements PollTallyInterface
     protected array $proposalsTallies = [];
 
     /**
-     * @param iterable<iterable<int>> $tally_per_proposal
+     * @param iterable<iterable<int>> $meritProfiles
      */
     public function __construct(
-        iterable $tally_per_proposal,
+        iterable $meritProfiles,
     )
     {
-        foreach ($tally_per_proposal as $proposal_tally_array) {
-            $this->proposalsTallies[] = new ArrayProposalTally($proposal_tally_array);
+        foreach ($meritProfiles as $meritProfile) {
+            $this->proposalsTallies[] = new ProposalTally($meritProfile);
         }
     }
 
     /**
-     * @return ProposalTallyInterface[]
+     * @inheritdoc
      */
     public function getProposalsTallies(): iterable
     {

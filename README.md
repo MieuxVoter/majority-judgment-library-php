@@ -1,4 +1,4 @@
-# Majority Judgment PHP Library
+# Majority Judgment Library for PHP
 
 [![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-php?style=for-the-badge)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-php?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-php/releases)

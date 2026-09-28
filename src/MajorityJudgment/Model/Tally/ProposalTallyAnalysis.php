@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Tally;
-
 
 /**
  * This does not compute the score nor the rank,
@@ -10,50 +8,29 @@ namespace MieuxVoter\MajorityJudgment\Model\Tally;
  *
  * We use the lower median grade (in case of odd amounts of judges),
  * but that could be a constructor parameter.
- *
- * Class ProposalTallyAnalysis
- * @package MieuxVoter\MajorityJudgment\Model\Tally
  */
 class ProposalTallyAnalysis
 {
     /**
      * Input proposal tally to analyze.
-     *
-     * @var ProposalTallyInterface
      */
     protected ProposalTallyInterface $proposalTally;
 
     /**
      * Total amount of available grades, including the ones that received no judgments.
      * This is usually around 7, and cannot be less than two.
-     *
-     * @var int
      */
     protected int $amountOfGrades;
 
     /**
      * Total amount of judgments received by this proposal.
-     *
-     *
-     * @var int
      */
     protected int $amountOfJudgments;
 
     /**
-     * 0 == "worst" grade (most conservative)
-     * Goes up to the amount of grades minus one.
-     *
-     * @var int
+     * Index of the median grade.
      */
-    protected int $medianGradeIndex;
-
-    /**
-     * Whatever object or primitive that was used in the the ProposalTallyInterface.
-     * It's usually an int, though.
-     *
-     * @var mixed
-     */
-    protected $medianGrade;
+    protected int $medianGrade;
 
     /**
      * ProposalTallyAnalysis constructor.
@@ -73,26 +50,7 @@ class ProposalTallyAnalysis
             $this->amountOfGrades += 1;
         }
 
-        $this->medianGradeIndex = self::computeMedianGradeIndex($tallies);
-        $this->medianGrade = $gradesTallies[$this->medianGradeIndex]->getGrade();
-
-
-    }
-
-    /**
-     * @return int
-     */
-    public function getMedianGradeIndex(): int
-    {
-        return $this->medianGradeIndex;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMedianGrade()
-    {
-        return $this->medianGrade;
+        $this->medianGrade = self::computeMedianGradeIndex($tallies);
     }
 
     /**
@@ -109,7 +67,7 @@ class ProposalTallyAnalysis
      *   Use the low (default) or high median, when there's an EVEN amount of judgments.
      * @return int
      */
-    static function computeMedianGradeIndex(array $tallies, ?int $total = null, $low=true): int
+    static function computeMedianGradeIndex(array $tallies, ?int $total = null, $low = true): int
     {
         if (null === $total) {
             $total = 0;
@@ -150,4 +108,11 @@ class ProposalTallyAnalysis
         return 0;
     }
 
+    /**
+     * @see $medianGrade
+     */
+    public function getMedianGrade(): int
+    {
+        return $this->medianGrade;
+    }
 }

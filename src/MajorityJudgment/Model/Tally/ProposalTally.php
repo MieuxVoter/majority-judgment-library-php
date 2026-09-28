@@ -4,6 +4,9 @@ namespace MieuxVoter\MajorityJudgment\Model\Tally;
 
 /**
  * The most basic implementation of a ProposalTallyInterface.
+ *
+ * Provide it with an array of tallies, one for each grade.
+ * The order goes from "worst" grade tally to "best" grade tally.
  */
 class ProposalTally implements ProposalTallyInterface
 {
