@@ -23,6 +23,10 @@ class BalancerTest extends TestCase
             $initialPollTally, 0,
         );
 
+        print_r($balancedPollTally->getProposalsTallies()[0]->getGradesTallies());
+        print_r($balancedPollTally->getProposalsTallies()[1]->getGradesTallies());
+        print_r($balancedPollTally->getProposalsTallies()[2]->getGradesTallies());
+
         $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
             [1, 2, 3, 4],
             $balancedPollTally->getProposalsTallies()[0]->getGradesTallies(),
