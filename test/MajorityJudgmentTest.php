@@ -116,7 +116,7 @@ class MajorityJudgmentTest extends TestCase
         $mj = new MajorityJudgment();
         $result = $mj->deliberate(new ArrayPollTally($tallies));
 
-        if ($expectedRanks != null) {
+        if ($expectedRanks !== null) {
             $actualRanks = array_map(function ($e) {
                 return $e->getRank();
             }, $result->getProposalResults());
@@ -128,7 +128,7 @@ class MajorityJudgmentTest extends TestCase
             );
         }
 
-        if ($expectedIndices != null) {
+        if ($expectedIndices !== null) {
             $actualIndices = array_map(function ($e) {
                 return $e->getIndex();
             }, $result->getProposalResultsRanked());

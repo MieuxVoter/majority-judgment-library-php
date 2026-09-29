@@ -62,6 +62,7 @@ class BalancerTest extends TestCase
             "Initial poll tally should be unchanged (3/3)",
         );
     }
+
     #[NoReturn]
     public function testBalanceUsingMedianDefaultGrade()
     {

@@ -12,9 +12,9 @@ namespace MieuxVoter\MajorityJudgment\Model\Tally;
 class ProposalTallyAnalysis
 {
     /**
-     * Input proposal tally to analyze.
+     * @var array<int> Amounts of grades received, for each grade, from "worst" grade to "best" grade.
      */
-    protected ProposalTallyInterface $proposalTally;
+    protected array $meritProfile;
 
     /**
      * Total amount of available grades, including the ones that received no judgments.
@@ -25,7 +25,7 @@ class ProposalTallyAnalysis
     /**
      * Total amount of judgments received by this proposal.
      */
-    protected int $amountOfJudgments;
+    protected int $totalSize;
 
     /**
      * Index of the median grade.
@@ -33,79 +33,139 @@ class ProposalTallyAnalysis
     protected int $medianGrade;
 
     /**
-     * ProposalTallyAnalysis constructor.
-     * @param ProposalTallyInterface $proposalTally
+     * Size of the median group, also known as the majority group.
+     * This can never be zero, unless there are no judgments at all in the tally.
      */
-    public function __construct(ProposalTallyInterface $proposalTally)
-    {
-        $this->proposalTally = $proposalTally;
-        $gradesTallies = $proposalTally->getGradesTallies();
+    protected int $medianGroupSize;
 
-        $this->amountOfGrades = 0;
-        $this->amountOfJudgments = 0;
-        $tallies = []; // same as ProposalTallyInterface but in primitives form
-        foreach ($gradesTallies as $gradeTally) {
-            $tallies[] = $gradeTally;
-            $this->amountOfJudgments += $gradeTally;
-            $this->amountOfGrades += 1;
+    /**
+     * Index of the lowest grade of the adhesion group, if any.
+     */
+    protected int $adhesionGrade;
+
+    /**
+     * Size of the adhesion group, if any.
+     */
+    protected int $adhesionGroupSize;
+
+    /**
+     * Index of the highest grade of the contestation group, if any.
+     */
+    protected int $contestationGrade;
+
+    /**
+     * Size of the contestation group, if any.
+     */
+    protected int $contestationGroupSize;
+
+    /**
+     * Index of the significant grade of the biggest group out of the median.
+     */
+    protected int $secondMedianGrade;
+
+    /**
+     * Size of the biggest group out of the median.
+     */
+    protected int $secondMedianGroupSize;
+
+    /**
+     * -1 for contestation
+     * +1 for adhesion
+     * ±0 for empty group size
+     */
+    protected int $secondMedianGroupSign;
+
+    public function __construct(
+        ProposalTallyInterface $proposalTally,
+    )
+    {
+        $this->performAnalysis($proposalTally->getGradesTallies());
+    }
+
+    protected function performAnalysis(
+        array $meritProfile,
+        bool  $favorContestation = true,
+    ): void
+    {
+        $this->meritProfile = $meritProfile;
+
+        $this->amountOfGrades = count($this->meritProfile);
+        $this->totalSize = array_sum($this->meritProfile);
+
+        $this->medianGrade = 0;
+        $this->medianGroupSize = 0;
+        $this->contestationGrade = 0;
+        $this->contestationGroupSize = 0;
+        $this->adhesionGrade = 0;
+        $this->adhesionGroupSize = 0;
+
+        $medianOffset = 2;
+        if ($favorContestation) {
+            $medianOffset = 1;
+        }
+        $medianCursor = intdiv($this->totalSize + $medianOffset, 2);
+
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        $tallyBeforeCursor = 0;
+        $tallyCursor = 0;
+        $foundMedian = false;
+
+        foreach ($this->meritProfile as $grade => $gradeTally) {
+            $tallyBeforeCursor = $tallyCursor;
+            $tallyCursor += $gradeTally;
+
+            if ( ! $foundMedian) {
+                if ($tallyCursor >= $medianCursor) {
+                    $foundMedian = true;
+                    $this->medianGrade = $grade;
+                    $this->contestationGroupSize = $tallyBeforeCursor;
+                    $this->medianGroupSize = $gradeTally;
+                    $this->adhesionGroupSize = (
+                        $this->totalSize - $this->contestationGroupSize - $this->medianGroupSize
+                    );
+                } else {
+                    if ($gradeTally > 0) {
+                        $this->contestationGrade = $grade;
+                    }
+                }
+            } else {
+                if ($gradeTally > 0 && $this->adhesionGrade == 0) {
+                    $this->adhesionGrade = $grade;
+                }
+            }
         }
 
-        $this->medianGrade = self::computeMedianGradeIndex($tallies);
+        if ($this->adhesionGroupSize > $this->contestationGroupSize) {
+            $this->secondMedianGrade = $this->adhesionGrade;
+            $this->secondMedianGroupSign = 1;
+            $this->secondMedianGroupSize = $this->adhesionGroupSize;
+        } elseif ($this->adhesionGroupSize < $this->contestationGroupSize) {
+            $this->secondMedianGrade = $this->contestationGrade;
+            $this->secondMedianGroupSign = -1;
+            $this->secondMedianGroupSize = $this->contestationGroupSize;
+        } else { // equality
+            if ($favorContestation) {
+                $this->secondMedianGrade = $this->contestationGrade;
+                $this->secondMedianGroupSign = -1;
+                $this->secondMedianGroupSize = $this->contestationGroupSize;
+            } else {
+                $this->secondMedianGrade = $this->adhesionGrade;
+                $this->secondMedianGroupSign = 1;
+                $this->secondMedianGroupSize = $this->adhesionGroupSize;
+            }
+        }
+
+        if ($this->secondMedianGroupSize == 0) {
+            $this->secondMedianGroupSign = 0;
+        }
     }
 
     /**
-     * Find the index of the median grade from the given array of tallies.
-     *
-     * @param int[] $tallies
-     *   Indexed array of integers.
-     *   Tally for each Grade, in the 'worst" grade to "best" grade order.
-     *   A Tally here is an amount of Judgments emitted with a specific Grade.
-     *   This looks like the merit profile, in other words.
-     *   Eg: A value of [1, 4, 3] would mean (Reject=1, Passable=4, Good=3)
-     * @param int|null $total
-     * @param bool $low
-     *   Use the low (default) or high median, when there's an EVEN amount of judgments.
-     * @return int
+     * @see $amountOfGrades
      */
-    static function computeMedianGradeIndex(array $tallies, ?int $total = null, $low = true): int
+    public function getAmountOfGrades(): int
     {
-        if (null === $total) {
-            $total = 0;
-            foreach ($tallies as $tally) {
-                $total += $tally;
-            }
-        }
-        assert(0 <= $total, "A negative amount of judgments is absurd.  Integer buffer Overflow?");
-
-        if (0 == $total) {
-            return 0;
-        }
-
-        $adjustedTotal = $total - 1;
-        if ( ! $low) {
-            $adjustedTotal = $total + 1;
-        }
-
-        $medianIndex = intdiv($adjustedTotal, 2);
-        $cursorIndex = 0;
-        foreach ($tallies as $gradeIndex => $tally) {
-            if (0 == $tally) {
-                continue;
-            }
-
-            $startIndex = $cursorIndex;
-            $cursorIndex += $tally;
-
-            if (
-                $startIndex <= $medianIndex
-                &&
-                $medianIndex < $cursorIndex
-            ) {
-                return $gradeIndex;
-            }
-        }
-
-        return 0;
+        return $this->amountOfGrades;
     }
 
     /**
@@ -114,5 +174,77 @@ class ProposalTallyAnalysis
     public function getMedianGrade(): int
     {
         return $this->medianGrade;
+    }
+
+    /**
+     * @see $totalSize
+     */
+    public function getTotalSize(): int
+    {
+        return $this->totalSize;
+    }
+
+    /**
+     * @see $medianGroupSize
+     */
+    public function getMedianGroupSize(): int
+    {
+        return $this->medianGroupSize;
+    }
+
+    /**
+     * @see $adhesionGrade
+     */
+    public function getAdhesionGrade(): int
+    {
+        return $this->adhesionGrade;
+    }
+
+    /**
+     * @see $adhesionGroupSize
+     */
+    public function getAdhesionGroupSize(): int
+    {
+        return $this->adhesionGroupSize;
+    }
+
+    /**
+     * @see $contestationGrade
+     */
+    public function getContestationGrade(): int
+    {
+        return $this->contestationGrade;
+    }
+
+    /**
+     * @see $contestationGroupSize
+     */
+    public function getContestationGroupSize(): int
+    {
+        return $this->contestationGroupSize;
+    }
+
+    /**
+     * @see $secondMedianGrade
+     */
+    public function getSecondMedianGrade(): int
+    {
+        return $this->secondMedianGrade;
+    }
+
+    /**
+     * @see $secondMedianGroupSize
+     */
+    public function getSecondMedianGroupSize(): int
+    {
+        return $this->secondMedianGroupSize;
+    }
+
+    /**
+     * @see $secondMedianGroupSign
+     */
+    public function getSecondMedianGroupSign(): int
+    {
+        return $this->secondMedianGroupSign;
     }
 }
