@@ -20,7 +20,7 @@ class BalancerTest extends TestCase
         );
 
         $balancedPollTally = Balancer::balanceUsingStaticDefaultGrade(
-            $initialPollTally, 0,
+            $initialPollTally,
         );
 
         //print_r($balancedPollTally->getProposalsTallies()[0]->getGradesTallies());

@@ -97,7 +97,7 @@ class Balancer
     {
         $gradesTallies = $proposalTally->getGradesTallies();
         $proposalParticipantsAmount = 0;
-        foreach ($gradesTallies as $gradeIndex => $gradeTally) {
+        foreach ($gradesTallies as $gradeTally) {
             $proposalParticipantsAmount += $gradeTally;
         }
         $missingJudgmentsAmount = $totalParticipantsAmount - $proposalParticipantsAmount;

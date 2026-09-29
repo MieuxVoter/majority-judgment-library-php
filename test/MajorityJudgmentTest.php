@@ -192,5 +192,10 @@ class MajorityJudgmentTest extends TestCase
             1,
             $result->getProposalResults()[2]->getRank(),
         );
+
+        $this->assertEquals(
+            4,
+            $result->getProposalResults()[0]->getAnalysis()->getMedianGrade(),
+        );
     }
 }
