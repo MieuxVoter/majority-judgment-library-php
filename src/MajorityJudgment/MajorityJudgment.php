@@ -19,9 +19,15 @@ use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
  */
 class MajorityJudgment
 {
-    // TODO: These could be derived from the data instead of being set arbitrarily like this
-    const GRADES_AMOUNT_MAX_DIGITS = 3; // 10e3 = 1000 grades should be more than enough
-    const PARTICIPANTS_AMOUNT_MAX_DIGITS = 11; // 10e11 = 10 times the humans on Earth in 2020
+    /**
+     * Count the digits in the decimal representation of $n.
+     * Works with negative numbers, even though we do not need that feature here.
+     */
+    static protected function countDigits(int $n): int
+    {
+        if ($n < 0) return self::countDigits(-$n) + 1;
+        return $n !== 0 ? floor(log10($n) + 1) : 1;
+    }
 
     /**
      * For a given Poll Tally, this computes a Result and returns it.
@@ -97,14 +103,6 @@ class MajorityJudgment
         // I. Collect data and check its sanity
         $gradesTallies = $proposalTally->getGradesTallies();
         $amountOfGrades = count($gradesTallies);
-        $tallies = [];  // working copy of $gradesTallies, mutated by algorithm
-        foreach ($gradesTallies as $gradeTally) {
-            assert(
-                0 <= $gradeTally,
-                "Tally is within meaningful range."
-            );
-            $tallies[] = $gradeTally;
-        }
 
         // II. Analyze the merit profile
         $analysis = new ProposalTallyAnalysis($proposalTally);
@@ -112,6 +110,8 @@ class MajorityJudgment
         $proposalResult->setMedian($analysis->getMedianGrade());
 
         // III. Compute a lexicographical score (higher is "better")
+        $amountOfDigitsForGrades = self::countDigits($amountOfGrades);
+        $amountOfDigitsForTallies = self::countDigits($analysis->getTotalSize());
         $deepMajorityGauge = $analysis->getDeepMajorityGauge();
         $score = "";
         for ($i = 0; $i < $amountOfGrades; $i++) {
@@ -119,16 +119,13 @@ class MajorityJudgment
                 $score .= '/';
             }
             $score .= sprintf(
-                "%0" . ((string)self::GRADES_AMOUNT_MAX_DIGITS) . "d",
-                $deepMajorityGauge[2*$i],
+                "%0" . ($amountOfDigitsForGrades) . "d",
+                $deepMajorityGauge[2 * $i],
             );
             $score .= '_';
-            // Note: the following caps the supported amount of participants.
-            // Could be bumped up by deriving the $amountOfDigits from $participantsAmount.
-            $amountOfDigits = self::PARTICIPANTS_AMOUNT_MAX_DIGITS;
             $score .= sprintf(
-                "%0" . ($amountOfDigits + 1) . "d",
-                pow(10, $amountOfDigits) + $deepMajorityGauge[2*$i+1],
+                "%0" . ($amountOfDigitsForTallies + 1) . "d",
+                pow(10, $amountOfDigitsForTallies) + $deepMajorityGauge[2 * $i + 1],
             );
         }
         $proposalResult->setScore($score);
