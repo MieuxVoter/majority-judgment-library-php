@@ -75,11 +75,35 @@ class ProposalTallyAnalysis
      */
     protected int $secondMedianGroupSign;
 
+    /**
+     * The deep majority gauge holds enough data to rank proposals without any approximation.
+     * It's a like a more complete majority gauge.
+     *
+     * It's a flat array of as many pairs as there are grades.
+     * Each pair is made of a grade index and of the signed size of the second median group.
+     * We compute it somewhat recursively, like so:
+     * 1. Compute the median grade and the second median group signed size
+     * 2. Repaint the median grade into the second median grade
+     * 3. Go to 1. (but stop after amountOfGrades loops)
+     *
+     * @var array<int>
+     */
+    protected array $deepMajorityGauge;
+
     public function __construct(
         ProposalTallyInterface $proposalTally,
+        bool  $favorContestation = true,
+        bool  $deep = true,
     )
     {
-        $this->performAnalysis($proposalTally->getGradesTallies());
+        $this->performAnalysis(
+            $proposalTally->getGradesTallies(),
+            $favorContestation,
+        );
+
+        if ($deep) {
+            $this->performDeepAnalysis($favorContestation);
+        }
     }
 
     protected function performAnalysis(
@@ -158,6 +182,32 @@ class ProposalTallyAnalysis
         if ($this->secondMedianGroupSize == 0) {
             $this->secondMedianGroupSign = 0;
         }
+    }
+
+    protected function performDeepAnalysis(
+        bool  $favorContestation = true,
+    ): void
+    {
+        $gauge = [];
+        $tally = $this->meritProfile; // PHP copies arrays by default
+
+        for ($i = 0; $i < $this->amountOfGrades; $i++) {
+            $analysis = new ProposalTallyAnalysis(
+                new ProposalTally($tally),
+                $favorContestation,
+                false,
+            );
+
+            $gauge[] = $analysis->getMedianGrade();
+            $gauge[] = $analysis->getSecondMedianGroupSize() * $analysis->getSecondMedianGroupSign();
+
+            if ($analysis->getMedianGrade() !== $analysis->getSecondMedianGrade()) {
+                $tally[$analysis->getMedianGrade()] = 0;
+                $tally[$analysis->getSecondMedianGrade()] += $analysis->getMedianGroupSize();
+            }
+        }
+
+        $this->deepMajorityGauge = $gauge;
     }
 
     /**
@@ -246,5 +296,14 @@ class ProposalTallyAnalysis
     public function getSecondMedianGroupSign(): int
     {
         return $this->secondMedianGroupSign;
+    }
+
+    /**
+     * @see $deepMajorityGauge
+     * @return int[]
+     */
+    public function getDeepMajorityGauge(): array
+    {
+        return $this->deepMajorityGauge;
     }
 }

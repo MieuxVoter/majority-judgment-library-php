@@ -6,6 +6,7 @@ use MieuxVoter\MajorityJudgment\Model\Result\PollResult;
 use MieuxVoter\MajorityJudgment\Model\Result\PollResultInterface;
 use MieuxVoter\MajorityJudgment\Model\Result\ProposalResult;
 use MieuxVoter\MajorityJudgment\Model\Tally\PollTallyInterface;
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyAnalysis;
 use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 
 /**
@@ -26,7 +27,9 @@ class MajorityJudgment
      * For a given Poll Tally, this computes a Result and returns it.
      * This is the heart of the Ranking, where the business logic resides.
      */
-    public function deliberate(PollTallyInterface $pollTally): PollResultInterface
+    public function deliberate(
+        PollTallyInterface $pollTally,
+    ): PollResultInterface
     {
         $proposalResults = [];
         $proposalResultsRanked = [];
@@ -103,9 +106,10 @@ class MajorityJudgment
             $tallies[] = $gradeTally;
         }
 
-        // II. Compute the median
-        $medianGradeIndex = self::getMedianGradeIndex($tallies);
-        $proposalResult->setMedian($medianGradeIndex);
+        // II. Analyze the merit profile
+        $analysis = new ProposalTallyAnalysis($proposalTally);
+        $proposalResult->setAnalysis($analysis);
+        $proposalResult->setMedian($analysis->getMedianGrade());
 
         // III. Compute a lexicographical score (higher is "better")
         $score = "";

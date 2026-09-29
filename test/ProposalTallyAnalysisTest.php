@@ -23,6 +23,22 @@ class ProposalTallyAnalysisTest extends TestCase
                 'secondMedianGrade' => 3,
                 'secondMedianGroupSize' => 4,
                 'secondMedianGroupSign' => 1,
+                'deepMajorityGauge' => [2, 4, 3, -3, 1, -1, 0, 0],
+            ],
+            "With a grade at zero" => [
+                'tally' => [5, 2, 0, 7],
+                'amountOfGrades' => 4,
+                'totalSize' => 14,
+                'medianGrade' => 1,
+                'medianGroupSize' => 2,
+                'adhesionGrade' => 3,
+                'adhesionGroupSize' => 7,
+                'contestationGrade' => 0,
+                'contestationGroupSize' => 5,
+                'secondMedianGrade' => 3,
+                'secondMedianGroupSize' => 7,
+                'secondMedianGroupSign' => 1,
+                'deepMajorityGauge' => [1, 7, 3, -5, 0, 0, 0, 0],
             ],
             "Favor contestation by default" => [
                 'tally' => [1, 1, 1, 1],
@@ -37,6 +53,7 @@ class ProposalTallyAnalysisTest extends TestCase
                 'secondMedianGrade' => 2,
                 'secondMedianGroupSize' => 2,
                 'secondMedianGroupSign' => 1,
+                'deepMajorityGauge' => [1, 2, 2, -1, 0, 1, 3, 0],
             ],
             "Allow empty tally" => [
                 'tally' => [0, 0, 0],
@@ -51,6 +68,7 @@ class ProposalTallyAnalysisTest extends TestCase
                 'secondMedianGrade' => 0,
                 'secondMedianGroupSize' => 0,
                 'secondMedianGroupSign' => 0,
+                'deepMajorityGauge' => [0, 0, 0, 0, 0, 0],
             ],
             "Allow void tally" => [
                 'tally' => [],
@@ -65,24 +83,26 @@ class ProposalTallyAnalysisTest extends TestCase
                 'secondMedianGrade' => 0,
                 'secondMedianGroupSize' => 0,
                 'secondMedianGroupSign' => 0,
+                'deepMajorityGauge' => [],
             ],
         ];
     }
 
     #[DataProvider('provideTestData')]
     function testAnalysis(
-        array $tally,
-        ?int  $amountOfGrades = null,
-        ?int  $totalSize = null,
-        ?int  $medianGrade = null,
-        ?int  $medianGroupSize = null,
-        ?int  $adhesionGrade = null,
-        ?int  $adhesionGroupSize = null,
-        ?int  $contestationGrade = null,
-        ?int  $contestationGroupSize = null,
-        ?int  $secondMedianGrade = null,
-        ?int  $secondMedianGroupSize = null,
-        ?int  $secondMedianGroupSign = null,
+        array  $tally,
+        ?int   $amountOfGrades = null,
+        ?int   $totalSize = null,
+        ?int   $medianGrade = null,
+        ?int   $medianGroupSize = null,
+        ?int   $adhesionGrade = null,
+        ?int   $adhesionGroupSize = null,
+        ?int   $contestationGrade = null,
+        ?int   $contestationGroupSize = null,
+        ?int   $secondMedianGrade = null,
+        ?int   $secondMedianGroupSize = null,
+        ?int   $secondMedianGroupSign = null,
+        ?array $deepMajorityGauge = null,
     )
     {
         $analysis = new ProposalTallyAnalysis(new ProposalTally($tally));
@@ -119,6 +139,9 @@ class ProposalTallyAnalysisTest extends TestCase
         }
         if ($secondMedianGroupSign !== null) {
             $this->assertEquals($secondMedianGroupSign, $analysis->getSecondMedianGroupSign());
+        }
+        if ($deepMajorityGauge !== null) {
+            $this->assertEquals($deepMajorityGauge, $analysis->getDeepMajorityGauge());
         }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace MieuxVoter\MajorityJudgment\Model\Result;
 
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyAnalysis;
+
 /**
  * An element of the leaderboard of a PollResult.
  *
@@ -36,6 +38,8 @@ class ProposalResult
      * Median Grade received by the Proposal.
      */
     protected int $median;
+
+    protected ProposalTallyAnalysis $analysis;
 
     /**
      * @see $index
@@ -91,5 +95,15 @@ class ProposalResult
     public function setMedian(int $median): void
     {
         $this->median = $median;
+    }
+
+    public function getAnalysis(): ProposalTallyAnalysis
+    {
+        return $this->analysis;
+    }
+
+    public function setAnalysis(ProposalTallyAnalysis $analysis): void
+    {
+        $this->analysis = $analysis;
     }
 }
