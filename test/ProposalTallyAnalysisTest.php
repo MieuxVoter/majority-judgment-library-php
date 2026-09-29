@@ -144,4 +144,57 @@ class ProposalTallyAnalysisTest extends TestCase
             $this->assertEquals($deepMajorityGauge, $analysis->getDeepMajorityGauge());
         }
     }
+
+
+    public function testGetMedianGrade()
+    {
+        $expectations = [
+            [
+                'tallies' => [1, 1],
+                'index' => 0,
+            ],
+            [
+                'tallies' => [2, 2, 2],
+                'index' => 1,
+            ],
+            [
+                'tallies' => [2, 2, 7],
+                'index' => 2,
+            ],
+            [
+                'tallies' => [2, 2, 5, 1, 3],
+                'index' => 2,
+            ],
+            [
+                'tallies' => [2, 3, 5, 7, 11, 13],
+                'index' => 4,
+            ],
+            [
+                'tallies' => [0, 0, 0, 0, 0, 0],
+                'index' => 0,
+            ],
+            [
+                'tallies' => [0, 0, 0, 1, 0, 0],
+                'index' => 3,
+            ],
+            [
+                'tallies' => [0, 0, 1, 0, 1, 0],
+                'index' => 2,
+            ],
+            [
+                'tallies' => [0, 2, 2],
+                'index' => 1,
+            ],
+        ];
+
+        foreach ($expectations as $expectation) {
+            $analysis = new ProposalTallyAnalysis(new ProposalTally($expectation['tallies']));
+            $actual = $analysis->getMedianGrade();
+            $this->assertEquals(
+                $expectation['index'],
+                $actual,
+                "Found the expected median grade index."
+            );
+        }
+    }
 }

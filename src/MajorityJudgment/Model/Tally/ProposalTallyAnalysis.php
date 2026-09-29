@@ -65,6 +65,7 @@ class ProposalTallyAnalysis
 
     /**
      * Size of the biggest group out of the median.
+     * This is either the size of the adhesion group or the size of the contestation group.
      */
     protected int $secondMedianGroupSize;
 
@@ -77,7 +78,7 @@ class ProposalTallyAnalysis
 
     /**
      * The deep majority gauge holds enough data to rank proposals without any approximation.
-     * It's a like a more complete majority gauge.
+     * It's a like a more complete, recursive majority gauge.
      *
      * It's a flat array of as many pairs as there are grades.
      * Each pair is made of a grade index and of the signed size of the second median group.

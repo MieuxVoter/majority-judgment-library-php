@@ -112,193 +112,28 @@ class MajorityJudgment
         $proposalResult->setMedian($analysis->getMedianGrade());
 
         // III. Compute a lexicographical score (higher is "better")
+        $deepMajorityGauge = $analysis->getDeepMajorityGauge();
         $score = "";
         for ($i = 0; $i < $amountOfGrades; $i++) {
             if (0 < $i) {
                 $score .= '/';
             }
-
-            $medianGradeIndex = self::getMedianGradeIndex($tallies);
             $score .= sprintf(
                 "%0" . ((string)self::GRADES_AMOUNT_MAX_DIGITS) . "d",
-                $medianGradeIndex
+                $deepMajorityGauge[2*$i],
             );
-
-            // Collect biggest of the two groups of grades outside the median.
-            // Group Grade is the index of the grade in the group that is adjacent to the median group.
-            // Group Sign is:
-            // - +1 if the group promotes higher grades (adhesion)
-            // - -1 if the group promotes lower grades (contestation)
-            // - ±0 if there is no spoon (nor group)
-            [$groupSize, $groupSign, $groupGrade] = self::getBiggestGroup($medianGradeIndex, $tallies);
-
             $score .= '_';
             // Note: the following caps the supported amount of participants.
             // Could be bumped up by deriving the $amountOfDigits from $participantsAmount.
             $amountOfDigits = self::PARTICIPANTS_AMOUNT_MAX_DIGITS;
             $score .= sprintf(
                 "%0" . ($amountOfDigits + 1) . "d",
-                pow(10, $amountOfDigits) + $groupSign * $groupSize
+                pow(10, $amountOfDigits) + $deepMajorityGauge[2*$i+1],
             );
-
-            self::regradeJudgments($tallies, $medianGradeIndex, $groupGrade);
         }
         $proposalResult->setScore($score);
 
         // IV. All is done — except for the rank
         return $proposalResult;
     }
-
-    /**
-     * Find the index of the median grade from the given array of tallies.
-     *
-     * This method may be optimized:
-     * - pass $total as parameter
-     * - median-finding loop may perhaps be optimized as well
-     *
-     * @param array $tallies
-     *   Indexed array of integers.
-     *   Tally for each Grade, in the 'worst" grade to "best" grade order.
-     *   A Tally here is an amount of Judgments emitted with a specific Grade.
-     *   This looks like the merit profile, in other words.
-     *   Eg: A value of [1, 4, 3] would mean (Reject=1, Passable=4, Good=3)
-     * @param bool $low
-     *   Use the low (default) or high median, when there's an EVEN amount of judgments.
-     * @return int
-     */
-    static function getMedianGradeIndex(array $tallies, bool $low = true): int
-    {
-        // We could perhaps pass this $total as parameter,
-        // but that would mean we trust that the total is correct, since
-        // when we use this method we assume that the all the tallies
-        // are already filled with the default values.
-        // Since for now we need resilience more than performance, we compute it,
-        // but it's wasted CPU cycles ; refactor at will.
-        $total = 0;
-        foreach ($tallies as $tally) {
-            $total += $tally;
-        }
-        //////////////////////////////
-
-        $adjustedTotal = $total - 1;
-        if ( ! $low) {
-            $adjustedTotal = $total + 1;
-        }
-
-        $medianIndex = intdiv($adjustedTotal, 2);
-        $cursorIndex = 0;
-        foreach ($tallies as $gradeIndex => $tally) {
-            if (0 == $tally) {
-                continue;
-            }
-
-            $startIndex = $cursorIndex;
-            $cursorIndex += $tally;
-            $endIndex = $cursorIndex;
-
-            if (
-                $startIndex <= $medianIndex
-                &&
-                $medianIndex < $endIndex
-            ) {
-                return $gradeIndex;
-            }
-        }
-
-        return 0;
-    }
-
-
-    /**
-     * Gets details about the biggest of the two groups that did not give the median grade.
-     * This method works more generally with $aroundGradeIndex, which is set to the median grade in practice,
-     * in the current score calculus implementation above.
-     *
-     * Group Size is the amount of judgments in the group.
-     * Group Grade is the index of the grade that is adjacent to the median group.
-     * Groups may contain multiple grades, but only the closest to the median group interests us.
-     * Group Sign is:
-     * - +1 if the group promotes higher grades (adhesion)
-     * - -1 if the group promotes lower grades (contestation)
-     * - -1 by default (no judgments, or only lowest grade) ← coupled to 'LOW' MEDIAN, innit?
-     *
-     *
-     * THIS ASSUMES A "LOW" MEDIAN ("WORST" grade) IN EVEN SCENARIOS
-     *
-     *
-     * @param $aroundGradeIndex
-     * @param array $tallies
-     * @return array [groupSize, groupSign, groupGrade]
-     */
-    static function getBiggestGroup($aroundGradeIndex, array $tallies): array
-    {
-        $belowGroupSize = 0;
-        $belowGroupSign = -1;
-        $belowGroupGrade = 0; // index
-
-        $aboveGroupSize = 0;
-        $aboveGroupSign = 1;
-        $aboveGroupGrade = 0; // index
-
-        $amountOfGrades = count($tallies);
-        for ($gradeIndex = 0; $gradeIndex < $amountOfGrades; $gradeIndex++) {
-            if (0 == $tallies[$gradeIndex]) {
-                continue;
-            }
-            if ($gradeIndex < $aroundGradeIndex) {
-                $belowGroupSize += $tallies[$gradeIndex];
-                $belowGroupGrade = $gradeIndex;
-            }
-            if ($gradeIndex > $aroundGradeIndex) {
-                $aboveGroupSize += $tallies[$gradeIndex];
-                if (0 == $aboveGroupGrade) {
-                    $aboveGroupGrade = $gradeIndex;
-                }
-            }
-        }
-
-        // /!. Assumption of LOW median with `>` /!.
-        if ($aboveGroupSize > $belowGroupSize) {
-            return [$aboveGroupSize, $aboveGroupSign, $aboveGroupGrade];
-        }
-        return [$belowGroupSize, $belowGroupSign, $belowGroupGrade];
-    }
-
-
-    /**
-     * Mutate the $tallies to put the judgments $fromGrade into $intoGrade.
-     * This is used by the current implementation of the score calculus.
-     *
-     * I don't like having such a method around (theoretical security concerns),
-     * so if we can rewrite the score calculus to not need such a method
-     * without introducing other mutating methods, we can and should remove this.
-     *
-     * @param $tallies
-     * @param $fromGrade
-     * @param $intoGrade
-     */
-    static function regradeJudgments(&$tallies, $fromGrade, $intoGrade): void
-    {
-        $amountOfGrades = count($tallies);
-        assert(
-            $fromGrade >= 0
-            &&
-            $fromGrade < $amountOfGrades,
-            "'From' Grade is within acceptable range."
-        );
-        assert(
-            $intoGrade >= 0
-            &&
-            $intoGrade < $amountOfGrades,
-            "'Into' Grade is within acceptable range."
-        );
-
-        if ($fromGrade == $intoGrade) {
-            return;
-        }
-
-        $tallies[$intoGrade] += $tallies[$fromGrade];
-        $tallies[$fromGrade] = 0;
-    }
-
 }
