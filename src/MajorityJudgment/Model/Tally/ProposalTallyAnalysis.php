@@ -93,8 +93,8 @@ class ProposalTallyAnalysis
 
     public function __construct(
         ProposalTallyInterface $proposalTally,
-        bool  $favorContestation = true,
-        bool  $deep = true,
+        bool                   $favorContestation = true,
+        bool                   $deep = true,
     )
     {
         $this->performAnalysis(
@@ -186,13 +186,17 @@ class ProposalTallyAnalysis
     }
 
     protected function performDeepAnalysis(
-        bool  $favorContestation = true,
+        bool $favorContestation = true,
     ): void
     {
         $gauge = [];
         $tally = $this->meritProfile; // PHP copies arrays by default
 
-        for ($i = 0; $i < $this->amountOfGrades; $i++) {
+        $cursorGrade = $this->medianGrade;
+        $minProcessedGrade = $cursorGrade;
+        $maxProcessedGrade = $cursorGrade;
+
+        for ($i = 0; $i < $this->amountOfGrades-1; $i++) {
             $analysis = new ProposalTallyAnalysis(
                 new ProposalTally($tally),
                 $favorContestation,
@@ -202,21 +206,21 @@ class ProposalTallyAnalysis
             $gauge[] = $analysis->getMedianGrade();
             $gauge[] = $analysis->getSecondMedianGroupSize() * $analysis->getSecondMedianGroupSign();
 
-            if ($analysis->getMedianGrade() !== $analysis->getSecondMedianGrade()) {
+            if ($analysis->secondMedianGroupSign > 0) {
+                $cursorGrade = $maxProcessedGrade + 1;
+                $maxProcessedGrade = $cursorGrade;
+            } else if ($analysis->secondMedianGroupSign < 0) {
+                $cursorGrade = $minProcessedGrade - 1;
+                $minProcessedGrade = $cursorGrade;
+            }
+
+            if ($analysis->getMedianGrade() !== $cursorGrade) {
                 $tally[$analysis->getMedianGrade()] = 0;
-                $tally[$analysis->getSecondMedianGrade()] += $analysis->getMedianGroupSize();
+                $tally[$cursorGrade] += $analysis->getMedianGroupSize();
             }
         }
 
         $this->deepMajorityGauge = $gauge;
-    }
-
-    /**
-     * @see $amountOfGrades
-     */
-    public function getAmountOfGrades(): int
-    {
-        return $this->amountOfGrades;
     }
 
     /**
@@ -228,11 +232,27 @@ class ProposalTallyAnalysis
     }
 
     /**
-     * @see $totalSize
+     * @see $secondMedianGroupSize
      */
-    public function getTotalSize(): int
+    public function getSecondMedianGroupSize(): int
     {
-        return $this->totalSize;
+        return $this->secondMedianGroupSize;
+    }
+
+    /**
+     * @see $secondMedianGroupSign
+     */
+    public function getSecondMedianGroupSign(): int
+    {
+        return $this->secondMedianGroupSign;
+    }
+
+    /**
+     * @see $secondMedianGrade
+     */
+    public function getSecondMedianGrade(): int
+    {
+        return $this->secondMedianGrade;
     }
 
     /**
@@ -241,6 +261,22 @@ class ProposalTallyAnalysis
     public function getMedianGroupSize(): int
     {
         return $this->medianGroupSize;
+    }
+
+    /**
+     * @see $amountOfGrades
+     */
+    public function getAmountOfGrades(): int
+    {
+        return $this->amountOfGrades;
+    }
+
+    /**
+     * @see $totalSize
+     */
+    public function getTotalSize(): int
+    {
+        return $this->totalSize;
     }
 
     /**
@@ -276,32 +312,8 @@ class ProposalTallyAnalysis
     }
 
     /**
-     * @see $secondMedianGrade
-     */
-    public function getSecondMedianGrade(): int
-    {
-        return $this->secondMedianGrade;
-    }
-
-    /**
-     * @see $secondMedianGroupSize
-     */
-    public function getSecondMedianGroupSize(): int
-    {
-        return $this->secondMedianGroupSize;
-    }
-
-    /**
-     * @see $secondMedianGroupSign
-     */
-    public function getSecondMedianGroupSign(): int
-    {
-        return $this->secondMedianGroupSign;
-    }
-
-    /**
-     * @see $deepMajorityGauge
      * @return int[]
+     * @see $deepMajorityGauge
      */
     public function getDeepMajorityGauge(): array
     {
