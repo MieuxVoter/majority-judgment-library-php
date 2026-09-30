@@ -15,19 +15,9 @@
   "require-dev": {
     "phpunit/phpunit": "~12"
   },
-  "suggest": {
-    "ext-gmp": "*",
-    "phpmath/biginteger": "@dev"
-  },
   "autoload": {
     "psr-4": {
       "MieuxVoter\\" : "src/"
     }
-  },
-  "repositories": [
-    {
-      "url": "https://github.com/domi41/biginteger.git",
-      "type": "git"
-    }
-  ]
+  }
 }
