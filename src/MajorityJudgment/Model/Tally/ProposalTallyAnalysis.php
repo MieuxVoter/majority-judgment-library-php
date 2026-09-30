@@ -196,7 +196,7 @@ class ProposalTallyAnalysis
         $minProcessedGrade = $cursorGrade;
         $maxProcessedGrade = $cursorGrade;
 
-        for ($i = 0; $i < $this->amountOfGrades-1; $i++) {
+        for ($i = 0; $i < $this->amountOfGrades - 1; $i++) {
             $analysis = new ProposalTallyAnalysis(
                 new ProposalTally($tally),
                 $favorContestation,
@@ -248,19 +248,19 @@ class ProposalTallyAnalysis
     }
 
     /**
-     * @see $secondMedianGrade
-     */
-    public function getSecondMedianGrade(): int
-    {
-        return $this->secondMedianGrade;
-    }
-
-    /**
      * @see $medianGroupSize
      */
     public function getMedianGroupSize(): int
     {
         return $this->medianGroupSize;
+    }
+
+    /**
+     * @see $secondMedianGrade
+     */
+    public function getSecondMedianGrade(): int
+    {
+        return $this->secondMedianGrade;
     }
 
     /**

@@ -164,12 +164,49 @@ class MajorityJudgmentTest extends TestCase
                 ],
                 'expectedException' => UnbalancedTalliesException::class,
             ],
+            "Balance using normalization (1)" => [
+                'tallies' => [
+                    [1, 1, 1],
+                    [1, 0, 1],
+                    [7, 7, 7],
+                    [7, 0, 7],
+                ],
+                'balanceUsingNormalization' => true,
+                'expectedRanks' => [
+                    1,
+                    3,
+                    1,
+                    3,
+                ],
+                'expectedIndices' => [
+                    0,
+                    2,
+                    1,
+                    3,
+                ],
+            ],
+            "Balance using normalization (2)" => [
+                'tallies' => [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                ],
+                'balanceUsingNormalization' => true,
+                'expectedRanks' => [
+                    1,
+                    2,
+                ],
+                'expectedIndices' => [
+                    0,
+                    1,
+                ],
+            ],
         ];
     }
 
     #[DataProvider('provideDeliberationTestData')]
     public function testMajorityJudgment(
         array   $tallies,
+        bool    $balanceUsingNormalization = false,
         ?array  $expectedRanks = null,
         ?array  $expectedIndices = null,
         ?string $expectedException = null,
@@ -180,7 +217,10 @@ class MajorityJudgmentTest extends TestCase
         $actualExceptionClass = "";
         try {
             $mj = new MajorityJudgment();
-            $result = $mj->deliberate(new ArrayPollTally($tallies));
+            $result = $mj->deliberate(
+                new ArrayPollTally($tallies),
+                $balanceUsingNormalization,
+            );
         } catch (Exception $e) {
             $actualException = $e;
             $actualExceptionClass = $e::class;
@@ -190,13 +230,13 @@ class MajorityJudgmentTest extends TestCase
             $this->assertEquals(
                 expected: $expectedException,
                 actual: $actualException::class,
-                message: "A ${expectedException} exception should be thrown.",
+                message: "A $expectedException exception should be thrown.",
             );
         } else {
             $message = $actualException?->getMessage();
             $this->assertEmpty(
                 actual: $actualException,
-                message: "${actualExceptionClass} was thrown with message:\n${message}\n",
+                message: "$actualExceptionClass was thrown with message:\n$message\n",
             );
         }
 

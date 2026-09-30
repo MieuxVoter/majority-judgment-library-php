@@ -20,15 +20,21 @@ use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
  */
 class MajorityJudgment
 {
+
     /**
      * For a given Poll Tally, this computes a Result and returns it.
      * This is the heart of the Ranking, where the business logic resides.
+     *
+     * @throws UnbalancedTalliesException
      */
     public function deliberate(
         PollTallyInterface $pollTally,
+        bool               $balanceUsingNormalization = false,
     ): PollResultInterface
     {
-        self::checkTallies($pollTally);
+        if ( ! $balanceUsingNormalization) {
+            self::checkTalliesBalance($pollTally);
+        }
 
         $proposalResults = [];
         $proposalResultsRanked = [];
@@ -44,9 +50,9 @@ class MajorityJudgment
         // II. Sort the proposals using their score (higher is "better")
         $sortSuccess = usort(
             $proposalResultsRanked,
-            function (ProposalResult $a, ProposalResult $b) {
-                return strcmp($b->getScore(), $a->getScore());
-            }
+            function (ProposalResult $a, ProposalResult $b) use ($balanceUsingNormalization) {
+                return self::compareProposalsResults($b, $a, $balanceUsingNormalization);
+            },
         );
         assert($sortSuccess, "Sorting by score must succeed!");
 
@@ -59,9 +65,11 @@ class MajorityJudgment
                 $proposalResultsRanked[$i]->setRank($rank);
             } else {
                 if (
-                    $proposalResultsRanked[$i]->getScore()
-                    ==  // Wow, we have a *perfect* ex-æquo → same rank
-                    $proposalResultsRanked[$i - 1]->getScore()
+                    self::compareProposalsResults(
+                        $proposalResultsRanked[$i],
+                        $proposalResultsRanked[$i - 1],
+                        $balanceUsingNormalization,
+                    ) === 0  // Wow, we have a *perfect* ex-æquo → same rank
                 ) {
                     $proposalResultsRanked[$i]->setRank(
                         $proposalResultsRanked[$i - 1]->getRank()
@@ -82,12 +90,31 @@ class MajorityJudgment
     }
 
     /**
+     * @throws UnbalancedTalliesException when proposals received different amounts of judgments.
+     */
+    static protected function checkTalliesBalance(
+        PollTallyInterface $pollTally,
+    ): void
+    {
+        $tallies = $pollTally->getProposalsTallies();
+        if ( ! empty($tallies)) {
+            $expectedAmountOfVoters = array_sum($tallies[0]->getGradesTallies());
+            foreach ($tallies as $proposalTally) {
+                $actualAmountOfVoters = array_sum($proposalTally->getGradesTallies());
+                if ($actualAmountOfVoters !== $expectedAmountOfVoters) {
+                    throw new UnbalancedTalliesException($pollTally);
+                }
+            }
+        }
+    }
+
+    /**
      * Computes the score of the provided proposal.
      * Does not compute the rank ; this will be done by deliberate().
      *
      * This is a static (context-free) method for (later) easier parallelization.
      */
-    static function computeProposalResult(
+    static protected function computeProposalResult(
         ProposalTallyInterface $proposalTally,
     ): ProposalResult
     {
@@ -103,6 +130,8 @@ class MajorityJudgment
         $proposalResult->setMedian($analysis->getMedianGrade());
 
         // III. Compute a lexicographical score (higher is "better")
+        //      Note: we do not use the score for ranking anymore — we use the deep majority gauge
+        //      We therefore might remove this score altogether, but it's harmless, so…  Not sure.
         $amountOfDigitsForGrades = self::countDigits($amountOfGrades);
         $amountOfDigitsForTallies = self::countDigits($analysis->getTotalSize());
         $deepMajorityGauge = $analysis->getDeepMajorityGauge();
@@ -137,19 +166,40 @@ class MajorityJudgment
         return $n !== 0 ? floor(log10($n) + 1) : 1;
     }
 
-    static protected function checkTallies(
-        PollTallyInterface $pollTally,
-    )
+    /**
+     * Comparison function for the sort of proposals.
+     *
+     * It's more expensive than a simple strcmp() on the score, but it supports ad hoc normalization.
+     */
+    static protected function compareProposalsResults(
+        ProposalResult $pa,
+        ProposalResult $pb,
+        bool           $balanceUsingNormalization = false,
+    ): int
     {
-        $tallies = $pollTally->getProposalsTallies();
-        if ( ! empty($tallies)) {
-            $expectedAmountOfVoters = array_sum($tallies[0]->getGradesTallies());
-            foreach ($tallies as $proposalTally) {
-                $actualAmountOfVoters = array_sum($proposalTally->getGradesTallies());
-                if ($actualAmountOfVoters !== $expectedAmountOfVoters) {
-                    throw new UnbalancedTalliesException($pollTally);
-                }
+        $ma = $pa->getMedian();
+        $mb = $pb->getMedian();
+        if ($ma < $mb) return -1;
+        if ($ma > $mb) return +1;
+
+        $ga = $pa->getAnalysis()->getDeepMajorityGauge();
+        $gb = $pb->getAnalysis()->getDeepMajorityGauge();
+        $gaugeSize = 2 * ($pa->getAnalysis()->getAmountOfGrades() - 1);
+        if ($balanceUsingNormalization) {
+            // TBD: divide those by their GCD?  (→ more compute, but marginally better support)
+            $ca = $pa->getAnalysis()->getTotalSize();
+            $cb = $pb->getAnalysis()->getTotalSize();
+            for ($i = 1; $i < $gaugeSize; $i += 2) {
+                if ($ga[$i] * $cb < $gb[$i] * $ca) return -1;
+                if ($ga[$i] * $cb > $gb[$i] * $ca) return +1;
+            }
+        } else {
+            for ($i = 1; $i < $gaugeSize; $i += 2) {
+                if ($ga[$i] < $gb[$i]) return -1;
+                if ($ga[$i] > $gb[$i]) return +1;
             }
         }
+
+        return 0;
     }
 }
