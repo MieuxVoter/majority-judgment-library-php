@@ -39,6 +39,9 @@ class ProposalResult
      */
     protected int $median;
 
+    /**
+     * In-depth analysis of the candidate tally.
+     */
     protected ProposalTallyAnalysis $analysis;
 
     /**
