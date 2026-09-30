@@ -92,6 +92,36 @@ If your tally is unbalanced, because some proposals received more judgments than
 you will need to balance the tally using one of the provided balancing methods (or your own).
 
 
+#### Using ad hoc normalization
+
+This is akin to using percentages to resolve Majority Judgment, instead of tallies.
+
+This kind of balancing is relevant when:
+- there are many proposals in your poll
+- users cannot be expected to judge them all
+- you ensured that participation is somewhat balanced
+- you excluded proposals that received too little participation
+
+```php
+$meritProfiles = [
+    [3, 3, 3, 3, 3],
+    [0, 1, 2, 3, 4],
+    [0, 2, 4, 6, 8],
+    [7, 7, 7, 7, 7],
+];
+
+$balanceUsingNormalization = true;
+$pollTally = new ArrayPollTally($meritProfiles);
+$mj = new MajorityJudgment();
+$result = $mj->deliberate($pollTally, $balanceUsingNormalization);
+
+// Ranks:
+// 3
+// 1
+// 1
+// 3
+```
+
 
 #### Using a Static Default Grade
 
