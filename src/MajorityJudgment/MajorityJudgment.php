@@ -114,7 +114,7 @@ class MajorityJudgment
         $amountOfDigitsForTallies = self::countDigits($analysis->getTotalSize());
         $deepMajorityGauge = $analysis->getDeepMajorityGauge();
         $score = "";
-        for ($i = 0; $i < $amountOfGrades; $i++) {
+        for ($i = 0; $i < $amountOfGrades - 1; $i++) {
             if (0 < $i) {
                 $score .= '/';
             }
