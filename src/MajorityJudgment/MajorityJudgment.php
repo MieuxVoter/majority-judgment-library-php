@@ -2,6 +2,7 @@
 
 namespace MieuxVoter\MajorityJudgment;
 
+use MieuxVoter\MajorityJudgment\Model\Exception\UnbalancedTalliesException;
 use MieuxVoter\MajorityJudgment\Model\Result\PollResult;
 use MieuxVoter\MajorityJudgment\Model\Result\PollResultInterface;
 use MieuxVoter\MajorityJudgment\Model\Result\ProposalResult;
@@ -20,16 +21,6 @@ use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyInterface;
 class MajorityJudgment
 {
     /**
-     * Count the digits in the decimal representation of $n.
-     * Works with negative numbers, even though we do not need that feature here.
-     */
-    static protected function countDigits(int $n): int
-    {
-        if ($n < 0) return self::countDigits(-$n) + 1;
-        return $n !== 0 ? floor(log10($n) + 1) : 1;
-    }
-
-    /**
      * For a given Poll Tally, this computes a Result and returns it.
      * This is the heart of the Ranking, where the business logic resides.
      */
@@ -37,6 +28,8 @@ class MajorityJudgment
         PollTallyInterface $pollTally,
     ): PollResultInterface
     {
+        self::checkTallies($pollTally);
+
         $proposalResults = [];
         $proposalResultsRanked = [];
 
@@ -132,5 +125,31 @@ class MajorityJudgment
 
         // IV. All is done — except for the rank
         return $proposalResult;
+    }
+
+    /**
+     * Count the digits in the decimal representation of $n.
+     * Works with negative numbers, even though we do not need that feature here.
+     */
+    static protected function countDigits(int $n): int
+    {
+        if ($n < 0) return self::countDigits(-$n) + 1;
+        return $n !== 0 ? floor(log10($n) + 1) : 1;
+    }
+
+    static protected function checkTallies(
+        PollTallyInterface $pollTally,
+    )
+    {
+        $tallies = $pollTally->getProposalsTallies();
+        if ( ! empty($tallies)) {
+            $expectedAmountOfVoters = array_sum($tallies[0]->getGradesTallies());
+            foreach ($tallies as $proposalTally) {
+                $actualAmountOfVoters = array_sum($proposalTally->getGradesTallies());
+                if ($actualAmountOfVoters !== $expectedAmountOfVoters) {
+                    throw new UnbalancedTalliesException($pollTally);
+                }
+            }
+        }
     }
 }

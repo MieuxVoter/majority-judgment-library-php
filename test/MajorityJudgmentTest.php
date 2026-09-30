@@ -2,7 +2,9 @@
 
 namespace MieuxVoter\MajorityJudgment\Test;
 
+use Exception;
 use MieuxVoter\MajorityJudgment\MajorityJudgment;
+use MieuxVoter\MajorityJudgment\Model\Exception\UnbalancedTalliesException;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -107,7 +109,7 @@ class MajorityJudgmentTest extends TestCase
                 'tallies' => [
                     [1e12, 2e12, 4e12],
                     [2e12, 3e12, 2e12],
-                    [1e12, 1e12, 7e12],
+                    [1e12, 1e12, 5e12],
                 ],
                 'expectedRanks' => [
                     2,
@@ -148,45 +150,83 @@ class MajorityJudgmentTest extends TestCase
                     0,
                 ],
             ],
+            "Unbalanced tallies raise an exception (1)" => [
+                'tallies' => [
+                    [1, 1, 1],
+                    [1, 0, 1],
+                ],
+                'expectedException' => UnbalancedTalliesException::class,
+            ],
+            "Unbalanced tallies raise an exception (2)" => [
+                'tallies' => [
+                    [0, 0, 1e3],
+                    [333, 333, 333],
+                ],
+                'expectedException' => UnbalancedTalliesException::class,
+            ],
         ];
     }
 
     #[DataProvider('provideDeliberationTestData')]
     public function testMajorityJudgment(
-        array $tallies,
-        array|null $expectedRanks = null,
-        array|null $expectedIndices = null,
+        array   $tallies,
+        ?array  $expectedRanks = null,
+        ?array  $expectedIndices = null,
+        ?string $expectedException = null,
     )
     {
-        $mj = new MajorityJudgment();
-        $result = $mj->deliberate(new ArrayPollTally($tallies));
+        /** @var Exception $actualException */
+        $actualException = null;
+        $actualExceptionClass = "";
+        try {
+            $mj = new MajorityJudgment();
+            $result = $mj->deliberate(new ArrayPollTally($tallies));
+        } catch (Exception $e) {
+            $actualException = $e;
+            $actualExceptionClass = $e::class;
+        }
 
-        if ($expectedRanks !== null) {
-            $actualRanks = array_map(function ($e) {
-                return $e->getRank();
-            }, $result->getProposalResults());
-
-            $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
-                $expectedRanks,
-                $actualRanks,
-                [],
+        if ($expectedException !== null) {
+            $this->assertEquals(
+                expected: $expectedException,
+                actual: $actualException::class,
+                message: "A ${expectedException} exception should be thrown.",
+            );
+        } else {
+            $message = $actualException?->getMessage();
+            $this->assertEmpty(
+                actual: $actualException,
+                message: "${actualExceptionClass} was thrown with message:\n${message}\n",
             );
         }
 
-        if ($expectedIndices !== null) {
-            $actualIndices = array_map(function ($e) {
-                return $e->getIndex();
-            }, $result->getProposalResultsRanked());
+        if ($expectedRanks !== null && isset($result)) {
+            $actualRanks = array_map(callback: function ($e) {
+                return $e->getRank();
+            }, array: $result->getProposalResults());
 
             $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
-                $expectedIndices,
-                $actualIndices,
-                [],
+                expected: $expectedRanks,
+                actual: $actualRanks,
+                keysToBeIgnored: [],
+            );
+        }
+
+        if ($expectedIndices !== null && isset($result)) {
+            $actualIndices = array_map(callback: function ($e) {
+                return $e->getIndex();
+            }, array: $result->getProposalResultsRanked());
+
+            $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
+                expected: $expectedIndices,
+                actual: $actualIndices,
+                keysToBeIgnored: [],
             );
         }
     }
 
-    public function testReadmeExample01() {
+    public function testReadmeExample01()
+    {
         $grades = [
             "to reject",
             "insufficient",
@@ -211,7 +251,7 @@ class MajorityJudgmentTest extends TestCase
         $mj = new MajorityJudgment();
         $result = $mj->deliberate($pollTally);
 
-        foreach($result->getProposalResultsRanked() as $proposalResult) {
+        foreach ($result->getProposalResultsRanked() as $proposalResult) {
             // … Do something
             print(sprintf(
                 "#%d %s (%s)\n",
@@ -226,21 +266,21 @@ class MajorityJudgmentTest extends TestCase
         // #3 Burger (somewhat good)
 
         $this->assertEquals(
-            2,
-            $result->getProposalResults()[0]->getRank(),
+            expected: 2,
+            actual: $result->getProposalResults()[0]->getRank(),
         );
         $this->assertEquals(
-            3,
-            $result->getProposalResults()[1]->getRank(),
+            expected: 3,
+            actual: $result->getProposalResults()[1]->getRank(),
         );
         $this->assertEquals(
-            1,
-            $result->getProposalResults()[2]->getRank(),
+            expected: 1,
+            actual: $result->getProposalResults()[2]->getRank(),
         );
 
         $this->assertEquals(
-            4,
-            $result->getProposalResults()[0]->getAnalysis()->getMedianGrade(),
+            expected: 4,
+            actual: $result->getProposalResults()[0]->getAnalysis()->getMedianGrade(),
         );
     }
 }
