@@ -4,73 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64b5f312959f50860cd8711629858a35",
-    "packages": [
-        {
-            "name": "phpmath/biginteger",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/domi41/biginteger.git",
-                "reference": "a868a64f481cdaab353ce08f6180ec9cfcf06c6f"
-            },
-            "require": {
-                "ext-gmp": "*",
-                "php": ">=8.2"
-            },
-            "require-dev": {
-                "phpmath/coding-standard": "^1.0",
-                "phpunit/phpunit": "^11.5"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PHP\\Math\\BigInteger\\": "src"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "PHP\\Math\\BigInteger\\Tests\\": "tests"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "test-coverage": [
-                    "@putenv XDEBUG_MODE=coverage",
-                    "phpunit --coverage-html build/phpunit-coverage/"
-                ],
-                "check-style": [
-                    "vendor/bin/phpcs"
-                ],
-                "fix-style": [
-                    "vendor/bin/phpcbf"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Walter Tamboer",
-                    "homepage": "https://waltertamboer.nl",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PHP library to work with big integers.",
-            "homepage": "https://github.com/phpmath/biginteger",
-            "keywords": [
-                "biginteger",
-                "integer",
-                "math",
-                "php8",
-                "phpmath"
-            ],
-            "time": "2025-09-05T08:04:12+00:00"
-        }
-    ],
+    "content-hash": "33b477877dff4147988eae6edcccdb93",
+    "packages": [],
     "packages-dev": [
         {
             "name": "myclabs/deep-copy",
@@ -654,16 +589,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.36",
+            "version": "12.5.37",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "ddb775588a0ea447d1c9b190c0f29c174ce81d65"
+                "reference": "684340c1590e5f3f3b859f5e80619725d88b63ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ddb775588a0ea447d1c9b190c0f29c174ce81d65",
-                "reference": "ddb775588a0ea447d1c9b190c0f29c174ce81d65",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/684340c1590e5f3f3b859f5e80619725d88b63ba",
+                "reference": "684340c1590e5f3f3b859f5e80619725d88b63ba",
                 "shasum": ""
             },
             "require": {
@@ -732,7 +667,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.36"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.37"
             },
             "funding": [
                 {
@@ -740,7 +675,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-09-25T08:47:40+00:00"
+            "time": "2026-09-29T12:08:54+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -1768,14 +1703,11 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpmath/biginteger": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2|^9",
-        "ext-gmp": "*"
+        "php": ">=8.2|^9"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
