@@ -75,6 +75,51 @@ class MajorityJudgmentTest extends TestCase
                     2,
                 ],
             ],
+            "Millions of voters" => [
+                'tallies' => [
+                    [5_000_000, 2_000_000, 3_000_000],
+                    [7_000_000, 1_000_000, 2_000_000],
+                ],
+                'expectedRanks' => [
+                    1,
+                    2,
+                ],
+                'expectedIndices' => [
+                    0,
+                    1,
+                ],
+            ],
+            "Billions of voters" => [
+                'tallies' => [
+                    [5_000_000_000, 2_000_000_000, 3_000_000_000],
+                    [7_000_000_000, 1_000_000_000, 2_000_000_000],
+                ],
+                'expectedRanks' => [
+                    1,
+                    2,
+                ],
+                'expectedIndices' => [
+                    0,
+                    1,
+                ],
+            ],
+            "Trillions of voters" => [
+                'tallies' => [
+                    [1e12, 2e12, 4e12],
+                    [2e12, 3e12, 2e12],
+                    [1e12, 1e12, 7e12],
+                ],
+                'expectedRanks' => [
+                    2,
+                    3,
+                    1,
+                ],
+                'expectedIndices' => [
+                    2,
+                    0,
+                    1,
+                ],
+            ],
             "Equality is allowed & order is stable" => [
                 'tallies' => [
                     [1, 2, 3, 4],
