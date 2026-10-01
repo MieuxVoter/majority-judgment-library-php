@@ -1,6 +1,10 @@
+# Utils
+/phpfilemerger.php
+
 # PHP
 /vendor
 /.php-version
+/.phpunit.result.cache
 
 # IDE
 /.idea

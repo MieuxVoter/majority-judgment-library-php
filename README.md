@@ -1,4 +1,4 @@
-# Majority Judgment PHP Library
+# Majority Judgment Library for PHP
 
 [![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-php?style=for-the-badge)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-php?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-php/releases)
@@ -16,9 +16,9 @@ Rank candidates of Majority Judgment polls.
 - [x] Fast & extensible
 - [x] Supports billions of voters
 - [x] Supports thousands of candidates
-- [x] Interface-oriented, test-driven code
-- [x] Room for other majority systems (usual, central, etc.)
-- [x] Using composer and PSR-4 namespaces
+- [x] Test-Driven Development
+- [x] No floating-point arithmetic
+- [x] Using composer and namespaces
 
 
 ## Installation
@@ -30,57 +30,156 @@ Require it in your own project, using composer:
 
 ## Usage example
 
-Let's say you have a poll with two candidates and merit profiles like so:
+Let's say you have a poll with three candidates and merit profiles like so:
 
-![Two merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-php.svg)
+![Three merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example.svg)
 
 You can get the rank of each candidate like so:
 
 ```php
-use MieuxVoter\MajorityJudgment\MajorityJudgmentDeliberator;
-use MieuxVoter\MajorityJudgment\Model\Settings\MajorityJudgmentSettings;
+use MieuxVoter\MajorityJudgment\MajorityJudgment;
 use MieuxVoter\MajorityJudgment\Model\Tally\ArrayPollTally;
 
-$tally = new ArrayPollTally([
-    'Proposal A' => [1, 1, 4, 3, 7, 4, 1], // amount of judgments for each grade
-    'Proposal B' => [0, 2, 4, 6, 4, 2, 3], // (worst grade to best grade)
-]);
+$grades = [
+    "to reject",
+    "insufficient",
+    "passable",
+    "somewhat good",
+    "good",
+    "very good",
+    "excellent",
+];
+$proposals = [
+    "Arancini",
+    "Burger",
+    "Chips",
+];
+$meritProfiles = [
+    [1, 1, 4, 3, 7, 4, 1], // for each proposal, tally the
+    [2, 2, 5, 5, 5, 0, 2], // amount of judgments for each grade
+    [0, 1, 2, 1, 6, 7, 4], // from "worst" grade to "best" grade
+];
 
-$deliberator = new MajorityJudgmentDeliberator();
+$pollTally = new ArrayPollTally($meritProfiles);
+$mj = new MajorityJudgment();
+$result = $mj->deliberate($pollTally);
 
-$result = $deliberator->deliberate($tally);
-// $result is a PollResultInterface
-
-foreach($result->getProposalResults() as $proposalResult) {
-    // … Do something
-    print($proposalResult->getProposal());
-    print($proposalResult->getRank());
+foreach($result->getProposalResultsRanked() as $proposalResult) {
+    // … Do something, for example:
+    print(sprintf(
+        "#%d %s (%s)\n",
+        $proposalResult->getRank(),
+        $proposals[$proposalResult->getIndex()],
+        $grades[$proposalResult->getMedian()],
+    ));
 }
 
+// #1 Chips (very good)
+// #2 Arancini (good)
+// #3 Burger (somewhat good)
+
 ```
+
+![Three ranked merit profiles showing the amount of judgments received per grade, per candidate](./docs/merit-example-ranked.svg)
+
+> [!TIP]
+> These images were generated with our [online merit profile tool](https://educ.mieuxvoter.fr/).
 
 
 ### Unbalanced Tallies
 
 If your tally is unbalanced, because some proposals received more judgments than others,
-you will need to balance the tally using one of the provided balancing methods (or your own):
+you will need to balance the tally using one of the provided balancing methods (or your own).
+
+
+#### Using ad hoc normalization
+
+This is akin to using percentages to resolve Majority Judgment, instead of tallies.
+
+This kind of balancing is relevant when:
+- there are many proposals in your poll
+- users cannot be expected to judge them all
+- you ensured that participation is somewhat balanced
+- you excluded proposals that received too little participation
 
 ```php
+$meritProfiles = [
+    [3, 3, 3, 3, 3],
+    [0, 1, 2, 3, 4],
+    [0, 2, 4, 6, 8],
+    [7, 7, 7, 7, 7],
+];
 
-use MieuxVoter\MajorityJudgment\Model\Tally\Balancer;
+$balanceUsingNormalization = true;
+$pollTally = new ArrayPollTally($meritProfiles);
+$mj = new MajorityJudgment();
+$result = $mj->deliberate($pollTally, $balanceUsingNormalization);
 
-$tally = Balancer::applyStaticDefault($tally);
-// or
-$tally = Balancer::applyMedianDefault($tally);
-// or (TODO)
-//$tally = Balancer::applyNormalization($tally);
-
+// Ranks:
+// 3
+// 1
+// 1
+// 3
 ```
 
 
-## Interface-oriented
+#### Using a Static Default Grade
 
-Any object implementing `PollTallyInterface` may be used as input.
+The most common balancing strategy is to consider missing judgments as of the "worst" grade.
+This incentivizes candidates to be clear and to promote themselves.
+
+Here's how one can use the `Balancer` to balance a poll tally:
+
+```php
+use MieuxVoter\MajorityJudgment\Balancer;
+
+$initialPollTally = new ArrayPollTally(
+    [
+        "Arancini" => [1, 2, 3, 4],
+        "Burger" => [4, 0, 0, 0],
+        "Chips" => [0, 1, 1, 2],
+    ],
+);
+
+$balancedPollTally = Balancer::balanceUsingStaticDefaultGrade($initialPollTally);
+
+print_r($balancedPollTally->getProposalsTallies()[0]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[1]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[2]->getGradesTallies());
+
+// [  1, 2, 3, 4 ]
+// [ 10, 0, 0, 0 ]
+// [  6, 1, 1, 2 ]
+```
+
+#### Using the Median Grade
+
+I can't fathom why you'd want this, but here it is anyway:
+
+```php
+$initialPollTally = new ArrayPollTally(
+    [
+        "Arancini" => [1, 2, 3, 4],
+        "Burger" => [2, 0, 0, 0],
+        "Chips" => [0, 1, 1, 0],
+    ],
+);
+
+$balancedPollTally = Balancer::balanceUsingMedianDefaultGrade($initialPollTally);
+
+print_r($balancedPollTally->getProposalsTallies()[0]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[1]->getGradesTallies());
+print_r($balancedPollTally->getProposalsTallies()[2]->getGradesTallies());
+
+// [1, 2, 3, 4]
+// [10, 0, 0, 0]
+// [0, 9, 1, 0]
+```
+
+> [!WARNING]
+> This balancing strategy is not very interesting, nor fair.
+> You probably should prefer normalization, or using the lowest grade.
+
 
 
 ### Testing
@@ -88,6 +187,5 @@ Any object implementing `PollTallyInterface` may be used as input.
 See the tests in `test/`.
 
     composer install
-    vendor/phpunit/phpunit/phpunit test
-
+    vendor/bin/phpunit test
 

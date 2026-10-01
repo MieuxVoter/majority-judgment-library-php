@@ -1,33 +1,21 @@
 <?php
 
-
 namespace MieuxVoter\MajorityJudgment\Model\Result;
 
+use MieuxVoter\MajorityJudgment\Model\Tally\ProposalTallyAnalysis;
 
 /**
  * An element of the leaderboard of a PollResult.
  *
- * Class ProposalResult
- * @package MieuxVoter\MajorityJudgment\Result
+ * Holds the rank of the proposal after ranking using Majority Judgment.
+ * Also holds the original index of the proposal in the input array of tallies.
  */
 class ProposalResult
 {
-
     /**
-     * One of the proposals submitted in the PollTally.
-     * It may have any type, for convenience.
-     *
-     * @var mixed $proposal
+     * Index of the Proposal in the input array of tallies.
      */
-    protected $proposal;
-
-    /**
-     * The amount of judgments received by this proposal on each grade,
-     * from 'lowest|worst' grade to 'highest|best' grade.
-     *
-     * @var array $tally Array of int
-     */
-    protected $tally;
+    protected int $index;
 
     /**
      * Rank of the Proposal, in the Result.
@@ -35,109 +23,90 @@ class ProposalResult
      * Two proposals may share the same rank.
      * The "best" proposal will have rank 1.
      * The rank increases continuously.
-     *
-     * @var int $rank
      */
-    protected $rank;
-
+    protected int $rank;
 
     /**
      * The higher the score, the better this Proposal is considered.
      * It depends on the meaning of the grades, of course.
-     * Higher scores means higher grades; and vice-versa.
+     * Higher scores means higher grades; and vice versa.
      * Scores are strings, compared lexicographically.
-     *
-     * @var string $score
      */
-    protected $score;
-
+    protected string $score;
 
     /**
-     * Median Grade.
-     *
-     * @var mixed $median
+     * Median Grade received by the Proposal.
      */
-    protected $median;
-
+    protected int $median;
 
     /**
-     * @return mixed
+     * In-depth analysis of the candidate tally.
      */
-    public function getProposal()
+    protected ProposalTallyAnalysis $analysis;
+
+    /**
+     * @see $index
+     */
+    public function getIndex(): int
     {
-        return $this->proposal;
+        return $this->index;
+    }
+
+    public function setIndex(int $index): static
+    {
+        $this->index = $index;
+
+        return $this;
     }
 
     /**
-     * @param mixed $proposal
-     */
-    public function setProposal($proposal): void
-    {
-        $this->proposal = $proposal;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTally(): array
-    {
-        return $this->tally;
-    }
-
-    /**
-     * @param array $tally
-     */
-    public function setTally(array $tally): void
-    {
-        $this->tally = $tally;
-    }
-
-    /**
-     * @return int
+     * @see $rank
      */
     public function getRank(): int
     {
         return $this->rank;
     }
 
-    /**
-     * @param int $rank
-     */
-    public function setRank(int $rank): void
+    public function setRank(int $rank): static
     {
         $this->rank = $rank;
+
+        return $this;
     }
 
     /**
-     * @return string
+     * @see $score
      */
     public function getScore(): string
     {
         return $this->score;
     }
 
-    /**
-     * @param string $score
-     */
     public function setScore(string $score): void
     {
         $this->score = $score;
     }
 
     /**
-     * @return mixed
+     * @return int The index of the median grade of this proposal.
      */
-    public function getMedian()
+    public function getMedian(): int
     {
         return $this->median;
     }
 
-    /**
-     * @param mixed $median
-     */
-    public function setMedian($median): void
+    public function setMedian(int $median): void
     {
         $this->median = $median;
     }
 
+    public function getAnalysis(): ProposalTallyAnalysis
+    {
+        return $this->analysis;
+    }
+
+    public function setAnalysis(ProposalTallyAnalysis $analysis): void
+    {
+        $this->analysis = $analysis;
+    }
 }
