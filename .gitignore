@@ -1,6 +1,9 @@
 # Utils
 /phpfilemerger.php
 
+# Generated
+/majorityjudgment.php
+
 # PHP
 /vendor
 /.php-version
