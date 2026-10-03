@@ -23,9 +23,14 @@ Rank candidates of Majority Judgment polls.
 
 ## Installation
 
-Require it in your own project, using composer:
+Require it in your own project, using _composer_:
 
     composer require mieuxvoter/majority-judgment
+
+If you do not have _composer_, for example when writing a _Wordpress_ plugin,
+you can also download the whole, [bundled library] from a single file. 
+
+[bundled library]: https://github.com/MieuxVoter/majority-judgment-library-php/releases/latest/download/majorityjudgment.php
 
 
 ## Usage example
