@@ -20,6 +20,20 @@ jobs:
           php-version: '8.3'
           tools: composer:v2
 
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      # See https://github.com/actions/cache/blob/main/examples.md#php---composer
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
       - name: Install PHP dependencies
         run: composer install
 
