@@ -48,31 +48,6 @@ class Balancer
         );
     }
 
-    static function balanceUsingMedianDefaultGrade(
-        PollTallyInterface $tally,
-        int                $amountOfParticipants = -1,
-    ): PollTallyInterface
-    {
-        $guessedAmountOfParticipants = self::guessAmountOfParticipants($tally);
-        if ($amountOfParticipants <= 0) {
-            $amountOfParticipants = $guessedAmountOfParticipants;
-        }
-
-        $newProposalsTallies = [];
-        foreach ($tally->getProposalsTallies() as $proposalTally) {
-            $analysis = new ProposalTallyAnalysis($proposalTally);
-            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
-                $proposalTally,
-                $amountOfParticipants,
-                $analysis->getMedianGrade()
-            );
-        }
-
-        return new PollTally(
-            $newProposalsTallies
-        );
-    }
-
     protected static function guessAmountOfParticipants(
         PollTallyInterface $tally,
     ): int
@@ -118,23 +93,28 @@ class Balancer
         );
     }
 
-    static function applyNormalization(
-        PollTallyInterface $tally
+    static function balanceUsingMedianDefaultGrade(
+        PollTallyInterface $tally,
+        int                $amountOfParticipants = -1,
     ): PollTallyInterface
     {
+        $guessedAmountOfParticipants = self::guessAmountOfParticipants($tally);
+        if ($amountOfParticipants <= 0) {
+            $amountOfParticipants = $guessedAmountOfParticipants;
+        }
+
         $newProposalsTallies = [];
-//        foreach ($tally->getProposalsTallies() as $proposalTally) {
-//            $analysis = new ProposalTallyAnalysis($proposalTally);
-//            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
-//                $proposalTally,
-//                $totalParticipantsAmount,
-//                $analysis->getMedianGradeIndex()
-//            );
-//        }
+        foreach ($tally->getProposalsTallies() as $proposalTally) {
+            $analysis = new ProposalTallyAnalysis($proposalTally);
+            $newProposalsTallies[] = self::applyStaticDefaultToProposal(
+                $proposalTally,
+                $amountOfParticipants,
+                $analysis->getMedianGrade(),
+            );
+        }
 
         return new PollTally(
             $newProposalsTallies
         );
     }
-
 }
