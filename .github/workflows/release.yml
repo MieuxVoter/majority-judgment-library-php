@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  workflow_dispatch: ~
+  push:
+    tags: [ 'v*' ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # See https://github.com/marketplace/actions/setup-php-action
+      - name: Setup PHP
+        id: setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      # See https://github.com/actions/cache/blob/main/examples.md#php---composer
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install
+
+      - name: Test
+        run: ./vendor/bin/phpunit test
+
+      # See https://github.com/actions/cache
+      - name: Cache phpfilemerger
+        id: cache-phpfilemerger
+        uses: actions/cache@v6
+        with:
+          path: phpfilemerger.php
+          key: ${{ runner.os }}-phpfilemerger
+
+      - name: Download phpfilemerger
+        if: steps.cache-phpfilemerger.outputs.cache-hit != 'true'
+        run: wget https://github.com/mevdschee/phpfilemerger/releases/download/v1.3.1/phpfilemerger.php
+
+      - name: Merge
+        run: sh entry/merge.sh
+
+      - run: ls -laH majorityjudgment.php
