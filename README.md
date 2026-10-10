@@ -19,6 +19,7 @@ Rank candidates of Majority Judgment polls.
 - [x] Test-Driven Development
 - [x] No floating-point arithmetic
 - [x] Using composer and namespaces
+- [x] Also available as a single file
 
 
 ## Installation
