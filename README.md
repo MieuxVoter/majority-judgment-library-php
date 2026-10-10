@@ -129,8 +129,8 @@ $result = $mj->deliberate($pollTally, $balanceUsingNormalization);
 ```
 
 > [!WARNING]
-> Due to a design choice (not using a lib for big integers), this ad hoc normalization is limited to a little over 3 billion voters.
-> If you have more voters than that, its result is unpredictable — it might work, or îit might glitch out by buffer overflow.
+> Due to a design choice _(not using a library for big integers)_, this _ad hoc_ normalization is **limited to a little over 3 billion voters**.
+> If you have more voters than that, its result is unpredictable — it might work, or it might glitch out by buffer overflow.
 
 #### Using a Static Default Grade
 
